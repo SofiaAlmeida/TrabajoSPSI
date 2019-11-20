@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+
+%Tipo de letra y color
+\usepackage{FiraSans}                 % Fuente sans serif
+\usepackage[T1]{fontenc}
+\usepackage[usenames]{color}
+\definecolor{ColorTitulo}{RGB}{169,50,38}
+
+%Imágenes
+\usepackage{graphicx}
+\graphicspath{{Imagenes/}}
+
+%Márgenes
+\usepackage[paper=portrait, pagesize]{typearea}
+\usepackage{titlepic}
+\setlength{\textwidth}{155mm}
+\setlength{\textheight}{210mm}
+\setlength{\oddsidemargin}{6mm}
+\setlength{\evensidemargin}{28mm}
+\setlength{\topmargin}{-10mm}
+
+%Símbolo para las listas
+\usepackage{listings}
+\usepackage{enumerate}
+\renewcommand{\labelitemi}{$\circ$}
+\usepackage{enumitem}
+
+%Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage}
+\lhead[L]{\MakeUppercase{\textit{Curva Elíptica}}}
+
+\renewcommand{\sectionmark}[1]{
+\markboth{#1}{}}
+\renewcommand{\headrulewidth}{0pt} 
+
+%Índice
+\addtocontents{toc}{\hspace{-7.5mm} \textbf{Secciones}}
+\addtocontents{toc}{\hfill \textbf{Página} \par}
+\addtocontents{toc}{\vspace{-2mm} \hspace{-7.5mm} \hrule \par}
+
+%Apéndices
+\usepackage[toc,title,page]{appendix}
+
+%Subíndices
+\usepackage{amsmath}
+\DeclareMathOperator{\Prob}{Prob}
+
+\begin{document}
+
+%%PORTADA%%
+\begin{titlepage}
+\centering
+\vspace*{4.5cm}
+\fontsize{30pt}{40pt}{\selectfont\sffamily{\textcolor{ColorTitulo}{Trabajo Teoría}}}\\
+\vspace{5mm}
+\fontsize{60pt}{50pt}{\selectfont\sffamily{\textcolor{ColorTitulo}{Curva Elíptica}}}
+\vspace{1.5cm}
+
+{\scshape\large \today \par}
+\vspace{1cm}
+
+
+\vspace*{\fill}
+\raggedleft{Sofía Almeida Bruno\\
+Pedro Manuel Flores Crespo\\
+María Victoria Granados Pozo\\
+\par}
+\vspace*{-2cm}
+
+\end{titlepage}
+
+\thispagestyle{empty}
+\tableofcontents
+
+\newpage
+
+\section{Introducción}
+
+\section{Curva Elíptica Criptográfica}
+
+
+%lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
+
+Parámetros de dominio para los algoritmos (p, a, b, G, n, h) donde:
+\begin{itemize}
+	\item p: primo
+	\item a, b: Coeficientes de la curva elíptica, hay que elegirlos con cuidado para que el algoritmo sea seguro
+	\item G: Generador del grupo
+	\item n: Orden del grupo
+	\item h: Cofactor del subgrupo
+\end{itemize}
+
+
+\section{Algoritmos}
+
+\subsection{ECDSA}
+
+Algoritmo de firma digital, Elliptic Curve Digital Signature Algorithm, es una variante del algoritmo DSA (Digital Signature Algortihm) aplicado a curvas elipticas. Trabaja con el hash del mensaje en lugar de con el propio mensaje. La elección de la función hash es importante, de esto dependerá la seguridad del sistema criptográfico. El hash del mensaje tendrá una longitud de \textit{n} bit.
+
+Imáginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y la otra persona, Bob, quiere validad la firma con la llave pública de alice ($H_{A}$). Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su llave pública puede verificarlas.
+
+Alice y Bob están usando los parámetros del dominio. El hash truncado lo denotaremos por \textit{z}.
+
+Algoritmo de firma del mensaje de Alice, a partir de \textit{k} y \textit{z} se genera la firma con la clave privada de Alice:
+
+
+\begin{enumerate}
+	\item Tomamos un entero k de forma aleatorio en el conjunto \{ 1, ..., n-1\}.
+	\item Calcular \textit{P} = \textit{kG}.
+	\item Calcular el número \textit{r = $x_{P}$}.
+	\item Si \textit{r} es 0 entonces se toma otro \textit{k} y se intenta de nuevo.
+	\item Se calcula \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_{A}$}) mod \textit{n}  con \textit{$k^{-1}$} el inverso multiplicativo de \textit{k} módulo \textit{n}.
+	\item Si \textit{s} es 0 entonces se elige otro \textit{k} y se vuelve al principio.
+\end{enumerate} 
+
+Al final obtendremos la firma que será la pareja (\textit{r}, \textit{s}) 
+
+Ahora entra el juego Bob que para validar la firma, a partir del mensaje firmado y de \textit{z} con la clave pública de Alice
+
+
+\subsection{ECDH}
+
+\subsection{Comparación con RSA}
+
+\section{Conclusiones}
+
+
+
+
+%Apéndice
+\appendix
+\renewcommand{\thesection}{\Roman{section}}
+\setcounter{section}{0}
+\section{Glosario}
+
+
+
+\end{document}
