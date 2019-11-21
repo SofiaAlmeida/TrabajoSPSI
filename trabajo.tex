@@ -95,6 +95,20 @@ Parámetros de dominio para los algoritmos (p, a, b, G, n, h) donde:
 	\item h: Cofactor del subgrupo
 \end{itemize}
 
+\subsection{El problema del logaritmo discreto}
+La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo el de otros criptosistemas como el Digital Signatura Algorithm (DSA) o el intercambio de llaves mediante el mecanismo de Diffie-Hellman.
+
+En nuestro caso, el problema consiste en lo siguiente: ``si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ?`podemos encontrar un $ k $ tal que $ Q = kP $? ''. Vemos que no estamos calculando un logaritmo como tal pero se sigue usando ese término por analogía a otros sistemas como se ha mencionado anteriormente. 
+
+Actualmente, no existe ninguna demostración matemática que efectivamente pruebe la dificultad de dicho cálculo. Solo sabemos que es difícil pero no podemos estar seguros. Con el siguiente ejemplo ilustramos su complejidad. Para ello usamos un algoritmo ``Baby-step, giant-step'' que se basa en el hecho de que cualquier entero $ x $ puede expresar como $ x = am+b $ con $ a,m \text{ y } b$ también enteros. Escribimos entonces:
+\begin{equation*}
+\begin{split}
+Q &= xP \\
+  &= (am+b)P\\
+  &=amP + bP.
+\end{split}
+\end{equation*}
+Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en en calcular algunos valores de $ bP $ y otros de $ Q-amP $ hasta que encontremos una correspondencia. El algoritmo también indica que debemos escoger $ m = \sqrt{n} $ y los números $ a $ y $ b $ se mueven entre 0 y $ m $ por lo que mientras $ bP $ tiene incrementos pequeños (``baby'') $ amP $ los tiene grandes (``huge''). Este método nos aporta una complejidad tanto en tiempo como en memoria de $ O(\sqrt{n}) $ . Este ataque tiene entonces complejidad exponencial pero es mejor que uno de fuerza bruta. De todos modos sigue siendo intratable ya que para un $  n  $ tal que $ \sqrt{n} = 7.922816251426434 \times 10^{28} $ el almacenamiento de datos que podemos llegar a necesitar es de $ 2,5\times10^{30} $ bytes de memoria (la capacidad de almacenamiento mundial es de aproximadamente $ 10^{21} $ bytes).
 
 \section{Algoritmos}
 
