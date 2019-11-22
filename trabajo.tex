@@ -10,7 +10,63 @@
 
 %Imágenes
 \usepackage{graphicx}
-\graphicspath{{Imagenes/}}
+\graphicspath{{img/}}
+\usepackage{float}
+
+%Matemáticas
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+%Código
+\usepackage{listings}
+\usepackage{xcolor}
+\renewcommand{\lstlistingname}{Código}% Listing -> Código
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+%% \lstset{frame=tb,
+%%   language=Sage,
+%%   aboveskip=3mm,
+%%   belowskip=3mm,
+%%   showstringspaces=false,
+%%   columns=flexible,
+%%   basicstyle={\small\ttfamily},
+%%   numbers=none,
+%%   numberstyle=\tiny\color{gray},
+%%   keywordstyle=\color{blue},
+%%   commentstyle=\color{dkgreen},
+%%   stringstyle=\color{mauve},
+%%   breaklines=true,
+%%   breakatwhitespace=true,
+%%   tabsize=3
+%% }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
 
 %Márgenes
 \usepackage[paper=portrait, pagesize]{typearea}
@@ -81,8 +137,72 @@ María Victoria Granados Pozo\\
 
 \section{Introducción}
 
-\section{Curva Elíptica Criptográfica}
+% Comentar que usaremos Sage en algún momento
 
+\section{Curva Elíptica}
+% Escribo esta sección inspirándome en el capítulo 2 de ``Elliptic Curves Number theory and cryptography'' y comparándo con otros artículos
+Antes de entrar en cómo usar las curvas elípticas en criptografía debemos definirlas y estudiar su estructura de grupo.
+
+Una curva elíptica será el conjunto de puntos que verifiquen la ecuación:
+\[y^2 = x^3 + ax + b,\]
+% Lo de 4a^3+27b \neq 0 no aparece por todos lados...TODO: revisar qué implica exactamente y ver si nos interesa o no...
+% vale...igual sí que aparecía más adelante
+% Imponemos esa condición a los valores de $a$ y $b$ para evitar que aparezcan raíces múltiples ¿por qué? supongo que porque puden dar problemas sobre las cosas generales que vamos a decir(?) aunque si las estudias de forma independiente pueden tener interés (no en nuestro caso que vamos a hacer un estudio más general)
+donde $a$ y $b$ son constantes. Esta ecuación es la \textbf{ecuación de Weierstrass} para curvas elípticas. Normalmente, $a, b, x, y$ toman valores en un cuerpo. Por ejemplo: los números reales $\mathbb{R}$, los números complejos $\mathbb{C}$, los números racionales $\mathbb{Q}$, un cuerpo finito $\mathbb{F}_p$ para un primo $p$ (este es el que se utiliza en criptografía habitualmente), un cuerpo finito $\mathbb{F}_q$ donde $q = p^k,$ $k \ge 0$, \dots
+
+De forma general, consideramos un cuerpo $K$ y definimos la curva elíptica $E$ sobre él de la siguiente forma:
+\[E = \{(x,y) \in K\times K : y^2 = x^3 + ax +b\} \cup \{\infty\}.
+\]
+El punto $\infty$ lo incluimos por definición y más adelante veremos su definición.
+
+Podemos usar Sage para visualizar algunos ejemplos de curvas elípticas. En el Código \ref{cod:EC} observamos la forma genérica de definir en Sage curvas elípticas.
+
+%TODO: arreglar colores
+% TODO: probar con language=Python
+\begin{lstlisting}[label={cod:EC}, caption={Curva elíptica en Sage}, morekeywords={sage}]
+sage:  E = EllipticCurve(K, [a, b]); E
+Elliptic Curve defined by y^2  = x^3 + x + 3 over a field K
+\end{lstlisting}
+
+El Código \ref{cod:ej1} es el necesario para crear la curva con ecuación de WeiErstrass $y^2=x^3-1$.
+
+\begin{lstlisting}[label={cod:ej1}, caption={Curva elíptica $y^2=x^3-x$}, morekeywords={sage}]
+sage: E =  EllipticCurve(RR, [-1, 0]);
+      plot(E, (-4, 3), color=hue(0.6))
+\end{lstlisting}
+
+Podemos observar la salida obtenida en la Figura \ref{fig:ej1}.
+
+% Cuando terminemos de escribir ya reajustamos tamaño y posición de las figuras para que no queden espacios en blanco
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{ej1}
+    \caption{Salida Código \ref{cod:ej1}}
+    \label{fig:ej1}
+\end{figure}
+
+Programamos de forma similar el código para visualizar la gráfica de la curva dada por la ecuación $y^2=x^3+x$, véase el Código \ref{cod:ej2}, cuya salida se encuentra en la Figura \ref{fig:ej2}
+
+\begin{lstlisting}[label={cod:ej2}, caption={Curva elíptica $y^2=x^3+x$}, morekeywords={sage}]
+sage: E =  EllipticCurve(RR, [1, 0]);
+      plot(E, (-2, 4), color=hue(0.8))
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{ej2}
+    \caption{Salida Código \ref{cod:ej2}}
+    \label{fig:ej2}
+\end{figure}
+
+En la Figura \ref{fig:EllipticCurveCatalog} tenemos una tabla con la forma de las curvas elípticas para valores enteros de $a$ entre -2 y 1 y $b$ entre -1 y 2.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{EllipticCurveCatalog}
+    \caption{Ejemplos de curvas elípticas}
+    \label{fig:EllipticCurveCatalog}
+\end{figure}
 
 %lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
 
@@ -114,9 +234,9 @@ Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en en calcular a
 
 \subsection{ECDSA}
 
-Algoritmo de firma digital, Elliptic Curve Digital Signature Algorithm, es una variante del algoritmo DSA (Digital Signature Algortihm) aplicado a curvas elipticas. Trabaja con el hash del mensaje en lugar de con el propio mensaje. La elección de la función hash es importante, de esto dependerá la seguridad del sistema criptográfico. El hash del mensaje tendrá una longitud de \textit{n} bit.
+ECDSA es un algoritmo de firma digital, Elliptic Curve Digital Signature Algorithm, es una variante del algoritmo DSA (Digital Signature Algortihm) aplicado a curvas elípticas. Trabaja con el hash del mensaje en lugar de con el propio mensaje. La elección de la función hash es importante, de esto dependerá la seguridad del sistema criptográfico. El hash del mensaje tendrá una longitud de \textit{n} bit.
 
-Imáginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y la otra persona, Bob, quiere validad la firma con la llave pública de alice ($H_{A}$). Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su llave pública puede verificarlas.
+Imaginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y la otra persona, Bob, quiere validar la firma con la llave pública de Alice ($H_{A}$). Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su llave pública puede verificarlas.
 
 Alice y Bob están usando los parámetros del dominio. El hash truncado lo denotaremos por \textit{z}.
 
