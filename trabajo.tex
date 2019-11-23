@@ -204,6 +204,39 @@ En la Figura \ref{fig:EllipticCurveCatalog} tenemos una tabla con la forma de la
     \label{fig:EllipticCurveCatalog}
 \end{figure}
 
+
+\subsection{Estructura de grupo}
+Dada una curva elíptica podemos definir un grupo abeliano formado por puntos de la misma. 
+\begin{enumerate}
+\item Tomamos como elemento neutro el punto del infinito $ \{\infty\} $.
+\item El opuesto de un punto $ P $ viene dado por su simétrico por el eje $ X $. Más concretamente, si $ P = (x_P, y_P) $ entonces $ -P = (x_P, -y_P) $.
+\item En general, dados dos puntos de la curva $ P = (x_P, y_P) $ y $ Q = (x_Q, y_Q) $ con $ x_P \neq y_P $, su suma es el punto $ -R $ que viene definida por:
+\[
+(x_R, -y_R) =(m^2 − x_P − x_Q, -y_P - m(x_R − x_P )) = (m^2 − x_P − x_Q, -y_Q - m(x_R − x_Q )),
+\]
+donde
+\[
+m = \frac{y_P-y_Q}{x_P-x_Q}.
+\]
+Puede causar asombro que definamos $ P+Q=-R $. Esto se deba al sentido geométrico de la suma en la curva. Esta operación debe seguir la siguiente regla: ``dados tres puntos $ P$, $ Q $ y $ R $ alineados y no nulos su suma $ P + Q + R $ debe ser el elemento neutro''. Por lo tanto, $ P +Q $ es el opuesto al punto de corte de la recta que une ambos puntos. De ahí también notamos la presencia del signo menos en la segunda coordenada tal y como indicamos en el punto anterior. También notar que el sentido geométrico nos aporta intuitivamente la conmutatividad ya que la recta tangente es la misma en el caso $ P+Q $ y $ Q+P $ y la asociatividad ya que $ (P+Q) + R = P + (Q+R) = (P+R) + Q$ (y las demás posibilidades).\\
+
+No podemos usar estas fórmulas en algunos casos especiales, poe ejemplo cuando $ P=Q $. En este caso no existe una sola recta que pase por ``ambos'' puntos. Sin embargo, si nos aproximamos a $ Q $ mediante puntos $ Q' $ con $ Q' \neq P $ en seguida vemos que la recta que obtendríamos es la tangente en $ P $. Así, definimos su suma como el opuesto del punto de intersección de la recta tangente en $ P $. Otra situación interesante es cuando $ P \neq Q $ pero no hay más puntos de corte. Nos encontramos en un caso parecido al anterior ya que uno de los puntos es tangente a la curva. Si suponemos que $ P $ es donde se da la tangencia, por el caso anterior tememos que $ P + P = -Q $ por lo que $ P + Q = -P $. En estas situaciones de tangencia tenemos que:
+\[
+m = \frac{3x^{2}_P + a}{2y_P}.
+\]
+En ambos casos debemos comprobar que la suma pertenece a la curva y que los tres puntos están alineados.
+
+\item Finalmente, dado $ n \in \mathbb{Z} $, el producto por escalares lo definimos como:
+\[   
+nP = 
+\begin{cases}
+ (P+\stackrel{n}{\cdots}+P) &\text{si } n > 0\\
+0 &\text{si } n = 0\\
+(-P\stackrel{n}{\cdots}-P) &\text{si } n < 0\\
+\end{cases}
+\]
+\end{enumerate}
+
 %lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
 
 Parámetros de dominio para los algoritmos (p, a, b, G, n, h) donde:
