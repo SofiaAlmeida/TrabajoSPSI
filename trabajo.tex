@@ -272,6 +272,7 @@ Imaginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y 
 
 Alice y Bob están usando los parámetros del dominio. El hash truncado lo denotaremos por \textit{z}.
 
+\subsubsection*{Firma del mensaje}
 Algoritmo de firma del mensaje de Alice, a partir de \textit{k} y \textit{z} se genera la firma con la clave privada de Alice:
 
 
@@ -286,8 +287,82 @@ Algoritmo de firma del mensaje de Alice, a partir de \textit{k} y \textit{z} se 
 
 Al final obtendremos la firma que será la pareja (\textit{r}, \textit{s}) 
 
-Ahora entra el juego Bob que para validar la firma, a partir del mensaje firmado y de \textit{z} con la clave pública de Alice
 
+Si el subgrupo tiene orden no primo, entonces el algoritmo ECDSA no se puede usar.
+
+\subsubsection*{Verificación de la firma}
+Ahora entra en juego Bob que para validar la firma, a partir del mensaje firmado y de \textit{z} con la clave pública de Alice \textit{$H_A$}.
+
+\begin{enumerate}
+	\item Calcular \textit{$u_1$} = \textit{$s^{-1}$ z} mod\textit{n}
+	\item Calcular \textit{$u_2$} = \textit{$s^{-1}$ r} mod\textit{n}
+	\item Calcular el punto \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}	
+\end{enumerate}
+
+La firma solo es válida si \textit{r} = \textit{$x_P$} mod\textit{n}
+
+
+\subsubsection*{Exactitud del algoritmo}
+Veamos que esta definición de \textit{P} del punto 3 con la definición anterior de \textit{P} = \textit{kG}
+
+Partimos de \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}, sustituimos el valor de la clave pública \textit{$H_A$} = \textit{$d_A$G}
+
+
+\begin{align}
+\begin{split}
+\textit{P} &= \textit{$u_1$G} + \textit{$u_2$$H_A$}\\ &= \textit{$u_1$G} + \textit{$u_2$$d_A$G}\\
+&= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}\\
+\end{split}
+\end{align}
+
+Sustituimos los valores de $u_1$ y $u_2$ que hemos declarado en la verificación de la firma:
+
+\begin{align}
+\begin{split}
+P &= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}\\
+&= (\textit{$s^{-1}$z} + \textit{$s^{-1}$r$d_A$}) \textit{G}\\
+&= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}\\
+\end{split}
+\end{align}
+
+Como el subgrupo cíclico de orden \textit{n} en el que estamos trabajando está generado por \textit{G} por tanto no hace falta poner ``mod \textit{n}'' si múltiplicamos por \textit{G}.
+
+
+Ahora nos fijamos en la definición de \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}. Multiplicamos por \textit{k} a ambos lados y dividimos por \textit{s} y obtenemos: \textit{k} = \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}
+
+\begin{align}
+\begin{split}
+P &= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}\\
+&= \textit{kG}
+\end{split}
+\end{align}
+
+
+\subsubsection*{Importancia de \textit{k}}
+
+Es importante el valor que escojamos de \textit{k} la clave secreta. Si además siempre firmamos con el mismo valor de \textit{k} y con los mismos valores aleatorios, para los atacantes serían más fácil encontrar la clave privada.
+
+Para descubrir la clave privada \textit{$d_S$} necesitamos calcular \textit{k} a partir de los hashes \textit{$z_1$} y \textit{$z_2$} y de las correspondientes firmas (\textit{$r_1$}, \textit{$s_1$}) y (\textit{$r_2$}, \textit{$s_2$})
+
+
+\begin{enumerate}
+	\item $r_1$ es igual a $r_2$, puesto que \textit{r} = \textit{$x_P$} mod \textit{n} y \textit{P} = \textit{kG} es el mismo para las dos firmas.
+	\item Observamos que  (\textit{$s_1$} - \textit{$s_2$}) mod\textit{n} = \textit{$k^{-1}$} (\textit{$z_1$} - \textit{$z_2$}) mod\textit{n} viene directamente de la definición de \textit{s}
+	\item \textit{k}(\textit{$s_1$} - \textit{$s_2$}) mod\textit{n} = (\textit{$z_1$} - \textit{$z_2$}) mod\textit{n}
+	\item \textit{k}  = (\textit{$z_1$} - \textit{$z_2$}) $(\textit{$s_1$} - \textit{$s_2$})^{-1}$ mod\textit{n}
+\end{enumerate}
+
+Ahora despejamos \textit{$d_S$} de la definición de \textit{s} y obtenemos que:
+
+
+\begin{align}
+\begin{split}
+\textit{s} &= \textit{$k^{-1}$}(\textit{z} + \textit{r$d_S$}) mod \textit{n}\\
+\textit{$d_S$} &= \textit{$r^{-1}$}(\textit{sk} - \textit{z}) mod \textit{n}\\
+\end{split}
+\end{align}
+
+Así hemos conseguido la clave privada con los valores que conocemos.
 
 \subsection{ECDH}
 
