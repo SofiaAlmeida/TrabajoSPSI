@@ -84,11 +84,13 @@
 \usepackage{enumitem}
 
 %Encabezados y pies de página
+\renewcommand{\thefootnote}{\roman{footnote}}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyfoot[R]{\thepage}
+%\rhead[R]{\MakeUppercase{\rightmark}}
 \lhead[L]{\MakeUppercase{\textit{Curva Elíptica}}}
+\fancyfoot[R]{\thepage}
 
 \renewcommand{\sectionmark}[1]{
 \markboth{#1}{}}
@@ -145,15 +147,12 @@ Antes de entrar en cómo usar las curvas elípticas en criptografía debemos def
 
 Una curva elíptica será el conjunto de puntos que verifiquen la ecuación:
 \[y^2 = x^3 + ax + b,\]
-% Lo de 4a^3+27b \neq 0 no aparece por todos lados...TODO: revisar qué implica exactamente y ver si nos interesa o no...
-% vale...igual sí que aparecía más adelante
-% Imponemos esa condición a los valores de $a$ y $b$ para evitar que aparezcan raíces múltiples ¿por qué? supongo que porque puden dar problemas sobre las cosas generales que vamos a decir(?) aunque si las estudias de forma independiente pueden tener interés (no en nuestro caso que vamos a hacer un estudio más general)
-donde $a$ y $b$ son constantes. Esta ecuación es la \textbf{ecuación de Weierstrass} para curvas elípticas. Normalmente, $a, b, x, y$ toman valores en un cuerpo. Por ejemplo: los números reales $\mathbb{R}$, los números complejos $\mathbb{C}$, los números racionales $\mathbb{Q}$, un cuerpo finito $\mathbb{F}_p$ para un primo $p$ (este es el que se utiliza en criptografía habitualmente), un cuerpo finito $\mathbb{F}_q$ donde $q = p^k,$ $k \ge 0$, \dots
+donde $a$ y $b$ son constantes y verifican $4a^3+27b \neq 0$\footnote{Imponemos esta condición para que la curva no presente raíces múltiples, que pueden dar problemas en la teoría general que expondremos. Se pueden tratar ambos casos de forma individual aunque nosotros no incluiremos estas excepciones en nuestro trabajo}. Esta ecuación es la \textbf{ecuación de Weierstrass} para curvas elípticas. Normalmente, $a, b, x, y$ toman valores en un cuerpo. Por ejemplo: los números reales $\mathbb{R}$, los números complejos $\mathbb{C}$, los números racionales $\mathbb{Q}$, un cuerpo finito $\mathbb{F}_p$ para un primo $p$ (este es el que se utiliza en criptografía habitualmente), un cuerpo finito $\mathbb{F}_q$ donde $q = p^k,$ $k \ge 0$, \dots
 
 De forma general, consideramos un cuerpo $K$ y definimos la curva elíptica $E$ sobre él de la siguiente forma:
 \[E = \{(x,y) \in K\times K : y^2 = x^3 + ax +b\} \cup \{\infty\}.
 \]
-El punto $\infty$ lo incluimos por definición y más adelante veremos su definición.
+El punto $\infty$ lo incluimos por definición. Lo podemos imaginar como un punto que se encuentra en la parte alta del eje y, pero también en la parte de abajo. Una línea que pase por este punto será una línea vertical, luego dos líneas verticales distintas coinciden en este punto.
 
 Podemos usar Sage para visualizar algunos ejemplos de curvas elípticas. En el Código \ref{cod:EC} observamos la forma genérica de definir en Sage curvas elípticas.
 
@@ -199,10 +198,11 @@ En la Figura \ref{fig:EllipticCurveCatalog} tenemos una tabla con la forma de la
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{EllipticCurveCatalog}
+    \includegraphics[width=0.7\textwidth]{EllipticCurveCatalog}
     \caption{Ejemplos de curvas elípticas}
     \label{fig:EllipticCurveCatalog}
 \end{figure}
+
 
 
 \subsection{Estructura de grupo}
@@ -237,8 +237,7 @@ nP =
 \]
 \end{enumerate}
 
-%lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
-
+%---lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
 Parámetros de dominio para los algoritmos (p, a, b, G, n, h) donde:
 \begin{itemize}
 	\item p: primo
@@ -247,7 +246,7 @@ Parámetros de dominio para los algoritmos (p, a, b, G, n, h) donde:
 	\item n: Orden del grupo
 	\item h: Cofactor del subgrupo
 \end{itemize}
-
+%----
 \subsection{El problema del logaritmo discreto}
 La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo el de otros criptosistemas como el Digital Signatura Algorithm (DSA) o el intercambio de llaves mediante el mecanismo de Diffie-Hellman.
 
