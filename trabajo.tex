@@ -368,6 +368,16 @@ Así hemos conseguido la clave privada con los valores que conocemos.
 
 \subsection{Comparación con RSA}
 
+La principal diferencia entre la criptografía de la curva elíptica y la de RSA, es la cantidad de almacenamiento que se necesita para guardar una clave al mismo nivel de seguridad. Por ejemplo, si para guardar una clave de RSA se necesitan 1024 bits, para almacenar la de ECC se requiere de 160, las diferencias son aún mayores cuando aumenta el nivel de seguridad, para RSA son necesarios 15360 bits mientras que para ECC son 521 bits.
+
+La relación entre los tamaños no es lineal, es decir, si multiplicamos por \textit{k} el tamaño de RSA, no tenemos \textit{k} veces el tamaño de ECC.
+
+Por otro lado, la generación de la clave y la firma es considerablemente más rápido con ECC que con RSA.
+
+
+Los algoritmos más rápidos para el computo de logaritmos discreots, además de la curva elíptica, son Pollard's rho y baby-step giant-step. Destaca uno en particula que es el algoritmo ``criba general del cuerpo de números'' el más rápido conocido a día de hoy para la factorización de enteros, que además se puede usar para el logaritmo discreto.
+
+
 \section{Conclusiones}
 
 
