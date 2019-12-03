@@ -260,7 +260,7 @@ Expuestas todas las herramientas necesarias, los parámetros de dominio para los
 \end{itemize}
 %----
 \section{El problema del logaritmo discreto}
-La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo el de otros criptosistemas como el Digital Signatura Algorithm (DSA) o el intercambio de llaves mediante el mecanismo de Diffie-Hellman.
+La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo el de otros criptosistemas como el Digital Signature Algorithm (DSA) o el intercambio de llaves mediante el mecanismo de Diffie-Hellman.
 
 En nuestro caso, el problema consiste en lo siguiente: ``si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ?`podemos encontrar un $ k $ tal que $ Q = kP $? ''. Vemos que no estamos calculando un logaritmo como tal pero se sigue usando ese término por analogía a otros sistemas como se ha mencionado anteriormente. 
 
@@ -359,9 +359,9 @@ Para descubrir la clave privada \textit{$d_S$} necesitamos calcular \textit{k} a
 
 \begin{enumerate}
 	\item $r_1$ es igual a $r_2$, puesto que \textit{r} = \textit{$x_P$} mod \textit{n} y \textit{P} = \textit{kG} es el mismo para las dos firmas.
-	\item Observamos que  (\textit{$s_1$} - \textit{$s_2$}) mod\textit{n} = \textit{$k^{-1}$} (\textit{$z_1$} - \textit{$z_2$}) mod\textit{n} viene directamente de la definición de \textit{s}
-	\item \textit{k}(\textit{$s_1$} - \textit{$s_2$}) mod\textit{n} = (\textit{$z_1$} - \textit{$z_2$}) mod\textit{n}
-	\item \textit{k}  = (\textit{$z_1$} - \textit{$z_2$}) $(\textit{$s_1$} - \textit{$s_2$})^{-1}$ mod\textit{n}
+	\item Observamos que  $(\textit{$s_1$} - \textit{$s_2$})$ mod\textit{n} = \textit{$k^{-1}$} $(\textit{$z_1$} - \textit{$z_2$})$ mod\textit{n} viene directamente de la definición de \textit{s}
+	\item \textit{k}$(\textit{$s_1$} - \textit{$s_2$}) mod\textit{n}$ = $(\textit{$z_1$} - \textit{$z_2$}) mod\textit{n}$
+	\item \textit{k}  = $(\textit{$z_1$} - \textit{$z_2$}) (\textit{$s_1$} - \textit{$s_2$})^{-1}$ mod\textit{n}
 \end{enumerate}
 
 Ahora despejamos \textit{$d_S$} de la definición de \textit{s} y obtenemos que:
