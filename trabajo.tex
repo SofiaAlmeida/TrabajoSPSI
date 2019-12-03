@@ -163,7 +163,7 @@ sage:  E = EllipticCurve(K, [a, b]); E
 Elliptic Curve defined by y^2  = x^3 + x + 3 over a field K
 \end{lstlisting}
 
-El Código \ref{cod:ej1} es el necesario para crear la curva con ecuación de WeiErstrass $y^2=x^3-1$.
+El Código \ref{cod:ej1} es el necesario para crear la curva con ecuación de WeiErstrass $y^2=x^3-x$.
 
 \begin{lstlisting}[label={cod:ej1}, caption={Curva elíptica $y^2=x^3-x$}, morekeywords={sage}]
 sage: E =  EllipticCurve(RR, [-1, 0]);
@@ -218,7 +218,7 @@ donde
 \[
 m = \frac{y_P-y_Q}{x_P-x_Q}.
 \]
-Puede causar asombro que definamos $ P+Q=-R $. Esto se deba al sentido geométrico de la suma en la curva. Esta operación debe seguir la siguiente regla: ``dados tres puntos $ P$, $ Q $ y $ R $ alineados y no nulos su suma $ P + Q + R $ debe ser el elemento neutro''. Por lo tanto, $ P +Q $ es el opuesto al punto de corte de la recta que une ambos puntos. De ahí también notamos la presencia del signo menos en la segunda coordenada tal y como indicamos en el punto anterior. También notar que el sentido geométrico nos aporta intuitivamente la conmutatividad ya que la recta tangente es la misma en el caso $ P+Q $ y $ Q+P $ y la asociatividad ya que $ (P+Q) + R = P + (Q+R) = (P+R) + Q$ (y las demás posibilidades).\\
+Puede causar asombro que definamos $ P+Q=-R $. Esto se deba al sentido geométrico de la suma en la curva. Esta operación debe seguir la siguiente regla: ``dados tres puntos $ P$, $ Q $ y $ R $ alineados y no nulos su suma $ P + Q + R $ debe ser el elemento neutro''. Por lo tanto, $ P +Q $ es el opuesto al punto de corte de la recta que une ambos puntos. De ahí también notamos la presencia del signo menos en la segunda coordenada tal y como indicamos en el punto anterior sobre los opuestos. También notar que el sentido geométrico nos aporta intuitivamente la conmutatividad ya que la recta tangente es la misma en el caso $ P+Q $ y $ Q+P $ y la asociatividad ya que $ (P+Q) + R = P + (Q+R) = (P+R) + Q$ (y las demás posibilidades).\\
 
 No podemos usar estas fórmulas en algunos casos especiales, por ejemplo cuando $ P=Q $. En este caso no existe una sola recta que pase por ``ambos'' puntos. Sin embargo, si nos aproximamos a $ Q $ mediante puntos $ Q' $ con $ Q' \neq P $ en seguida vemos que la recta que obtendríamos es la tangente en $ P $. Así, definimos su suma como el opuesto del punto de intersección de la recta tangente en $ P $. Otra situación interesante es cuando $ P \neq Q $ pero no hay más puntos de corte. Nos encontramos en un caso parecido al anterior ya que uno de los puntos es tangente a la curva. Si suponemos que $ P $ es donde se da la tangencia, por el caso anterior tememos que $ P + P = -Q $ por lo que $ P + Q = -P $. En estas situaciones de tangencia tenemos que:
 \[
@@ -242,12 +242,12 @@ Notamos que si, $ n, m \in \mathbb{Z} $ y $ P \in E $ se cumple que:
 \[
 nP + mP = (n+m)P.
 \]
-Así, los múltiplos de $ P $ son cerrados bajo la suma. Obtenemos de este modo que los múltiplos de un punto de la curva forman un subgrupo cíclico. Nos preguntamos ahora cuál es el orden de dichos subgrupos, es decir, debemos encontrar el mínimo $ n \in \mathbb{N} $ que cumpla $ nP = \infty $. Para su cálculo debemos tener en cuenta el Teorema de Lagrange que nos dice que si $ H $ es un subgrupo de $ G $ entonces el orden de $ H $ es un divisor del orden de $ G $. El orden del grupo de la curva elíptica lo podemos calcular en tiempo polinomial gracias al algoritmo de Schoof. De este modo, como tenemos el orden del grupo formado por la curva elíptica que notamos como $ N $, el orden del subgrupo de los múltiplos de $ P $ queda determinado por:
+Así, los múltiplos de $ P $ son cerrados bajo la suma. Obtenemos de este modo que los múltiplos de un punto de la curva forman un subgrupo cíclico. Nos preguntamos ahora cuál es el orden de dichos subgrupos, es decir, debemos encontrar el mínimo $ n \in \mathbb{N} $ que cumpla $ nP = \infty $. Para su cálculo debemos tener en cuenta el Teorema de Lagrange que nos dice que si $ H $ es un subgrupo de $ G $ entonces el orden de $ H $ es un divisor del orden de $ G $. El orden del grupo de la curva elíptica lo podemos calcular en tiempo polinomial gracias al algoritmo de Schoof. De este modo, como tenemos el orden del grupo formado por la curva elíptica que notamos como $ N $, el orden del subgrupo con generador $ P $ queda determinado por:
 \[
 \min\{ n \in \mathbb{N}:\text{ } nP = \infty \text{ y } n | N\}.
 \]
 
-Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegir el orden del subgrupo que queremos y posteriormente encontrar el generador de la siguiente. Si el orden del subgrupo que queremos es un primo $ p $ el proceso a seguir es calcular el cofactor $ h = N/n $, tomar un punto aleatorio $ P \in E $ y obtener $ hP $. Si es 0, tomar un nuevo punto y si no $ P $ es el generador deseado. \\
+Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegir el orden del subgrupo que queremos y posteriormente encontrar el generador de la siguiente. Si el orden del subgrupo que queremos es un primo $ p $ el proceso a seguir es calcular el cofactor $ h = N/n $, tomar un punto aleatorio $ P \in E $ y obtener $ hP $. Si es 0, tomar un nuevo punto y si no $ P $ es el generador deseado. Como anotación, los órdenes de los subgrupos se suelen escoger de orden primo ya que Pohlig y Hellman probaron que un criptosistema es seguro si, y solo si, no es factible el cálculo del logaritmo discreto en grupos con orden un primo (REFERENCIAR). En la siguiente sección exponemos el problema del logaritmo discreto en el contexto de las curvas elípticas. \\
 
 %---lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
 Expuestas todas las herramientas necesarias, los parámetros de dominio para los algoritmos son $ (p, a, b, G, n, h) $ donde:
@@ -272,7 +272,7 @@ Q &= xP \\
   &=amP + bP.
 \end{split}
 \end{equation*}
-Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en en calcular algunos valores de $ bP $ y otros de $ Q-amP $ hasta que encontremos una correspondencia. El algoritmo también indica que debemos escoger $ m = \sqrt{n} $ y los números $ a $ y $ b $ se mueven entre 0 y $ m $ por lo que mientras $ bP $ tiene incrementos pequeños (``baby'') $ amP $ los tiene grandes (``huge''). Este método nos aporta una complejidad tanto en tiempo como en memoria de $ O(\sqrt{n}) $, es decir, exponencial pero es mejor que uno de fuerza bruta. De todos modos sigue siendo intratable ya que para un $  n  $ tal que $ \sqrt{n} = 7.922816251426434 \times 10^{28} $ el almacenamiento de datos que podemos llegar a necesitar es de $ 2,5\times10^{30} $ bytes de memoria (la capacidad de almacenamiento mundial es de aproximadamente $ 10^{21} $ bytes).
+Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en en calcular algunos valores de $ bP $ y otros de $ Q-amP $ hasta que encontremos una correspondencia. El algoritmo también indica que debemos escoger $ m = \sqrt{n} $ y los números $ a $ y $ b $ se mueven entre 0 y $ m $ por lo que mientras $ bP $ tiene incrementos pequeños (``baby'') $ amP $ los tiene grandes (``huge''). Este método nos aporta una complejidad tanto en tiempo como en memoria de $ O(\sqrt{n}) $, es decir, exponencial pero es mejor que uno de fuerza bruta. De todos modos sigue siendo intratable ya que para un $  n  $ tal que $ \sqrt{n} = 7.922816251426434 \times 10^{28} $ el almacenamiento de datos que podemos llegar a necesitar es de $ 2,5\times10^{30} $ bytes de memoria (la capacidad de almacenamiento mundial es de aproximadamente $ 10^{21} $ bytes). \\
 
 \section{Algoritmos}
 
@@ -289,9 +289,9 @@ Algoritmo de firma del mensaje de Alice, a partir de \textit{k} y \textit{z} se 
 
 
 \begin{enumerate}
-	\item Tomamos un entero k de forma aleatorio en el conjunto \{ 1, ..., n-1\}.
+	\item Tomamos un entero $ k $ de forma aleatorio en el conjunto $ \{ 1, ..., n-1\} $.
 	\item Calcular \textit{P} = \textit{kG}.
-	\item Calcular el número \textit{r = $x_{P}$}.
+	\item Calcular el número \textit{r = $x_{P} \mod n$}.
 	\item Si \textit{r} es 0 entonces se toma otro \textit{k} y se intenta de nuevo.
 	\item Se calcula \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_{A}$}) mod \textit{n}  con \textit{$k^{-1}$} el inverso multiplicativo de \textit{k} módulo \textit{n}.
 	\item Si \textit{s} es 0 entonces se elige otro \textit{k} y se vuelve al principio.
