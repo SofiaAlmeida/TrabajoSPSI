@@ -1,10 +1,10 @@
 \documentclass[11pt]{article}
+\usepackage{fontspec}
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 
 %Tipo de letra y color
 \usepackage{FiraSans}                 % Fuente sans serif
-\usepackage[T1]{fontenc}
 \usepackage[usenames]{color}
 \definecolor{ColorTitulo}{RGB}{169,50,38}
 
@@ -248,18 +248,9 @@ Así, los múltiplos de $ P $ son cerrados bajo la suma. Obtenemos de este modo 
 \]
 
 Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegir el orden del subgrupo que queremos y posteriormente encontrar el generador de la siguiente. Si el orden del subgrupo que queremos es un primo $ p $ el proceso a seguir es calcular el cofactor $ h = N/n $, tomar un punto aleatorio $ P \in E $ y obtener $ hP $. Si es 0, tomar un nuevo punto y si no $ P $ es el generador deseado. Como anotación, los órdenes de los subgrupos se suelen escoger de orden primo ya que Pohlig y Hellman probaron que un criptosistema es seguro si, y solo si, no es factible el cálculo del logaritmo discreto en grupos con orden un primo (REFERENCIAR). En la siguiente sección exponemos el problema del logaritmo discreto en el contexto de las curvas elípticas. \\
-
-%---lo necesito para la parte de ECDSA sino se usa en otro sitio ponerlo en ECDSA
-Expuestas todas las herramientas necesarias, los parámetros de dominio para los algoritmos son $ (p, a, b, G, n, h) $ donde:
-\begin{itemize}
-	\item $ p $: primo
-	\item $ a, b $: Coeficientes de la curva elíptica, hay que elegirlos con cuidado para que el algoritmo sea seguro
-	\item $ G $: Generador del grupo
-	\item $ n $: Orden del grupo
-	\item $ h $: Cofactor del subgrupo
-\end{itemize}
 %----
 \section{El problema del logaritmo discreto}
+\label{sec:log}
 La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo el de otros criptosistemas como el Digital Signature Algorithm (DSA) o el intercambio de llaves mediante el mecanismo de Diffie-Hellman.
 
 En nuestro caso, el problema consiste en lo siguiente: ``si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ?`podemos encontrar un $ k $ tal que $ Q = kP $? ''. Vemos que no estamos calculando un logaritmo como tal pero se sigue usando ese término por analogía a otros sistemas como se ha mencionado anteriormente. 
@@ -275,6 +266,50 @@ Q &= xP \\
 Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en en calcular algunos valores de $ bP $ y otros de $ Q-amP $ hasta que encontremos una correspondencia. El algoritmo también indica que debemos escoger $ m = \sqrt{n} $ y los números $ a $ y $ b $ se mueven entre 0 y $ m $ por lo que mientras $ bP $ tiene incrementos pequeños (``baby'') $ amP $ los tiene grandes (``huge''). Este método nos aporta una complejidad tanto en tiempo como en memoria de $ O(\sqrt{n}) $, es decir, exponencial pero es mejor que uno de fuerza bruta. De todos modos sigue siendo intratable ya que para un $  n  $ tal que $ \sqrt{n} = 7.922816251426434 \times 10^{28} $ el almacenamiento de datos que podemos llegar a necesitar es de $ 2,5\times10^{30} $ bytes de memoria (la capacidad de almacenamiento mundial es de aproximadamente $ 10^{21} $ bytes). \\
 
 \section{Algoritmos}
+
+Los algoritmos criptográficos basados en curvas elípticas (ECC, por sus siglas en inglés \textit{Elliptic Curve Cryptography}) surgen por primera vez en el año 1984 y muchos de ellos son adaptaciones de algoritmos ya existentes para utilizarlos en el grupo definido por una curva elíptica. En esta sección nos centraremos en dos de esos algoritmos: ECDSA y ECDH, uno de firma y otro de intercambio de claves.
+
+Expuestas todas las herramientas necesarias, falta determinar cuáles son los parámetros necesarios para los algoritmos. Serán una ¿seis-upla? $ (p, a, b, G, n, h) $, donde:
+\begin{itemize}
+	\item $ p $ es un número primo.
+	\item $ a, b $ son los coeficientes de la curva elíptica, hay que elegirlos con cuidado para garantizar que el algoritmo sea seguro.
+	\item $ G $ es el generador del grupo.
+	\item $ n $ es el orden del grupo.
+	\item $ h $ es el cofactor del subgrupo.
+\end{itemize}
+
+En ocasiones también se añade a estos parámetros una semilla $S$ que se utiliza mediante una función hash para calcular el orden del grupo o los coeficientes de la curva, de esta forma no dependeríamos de la seguridad de una curva específica.
+
+La ECC es un tipo de sistema de clave pública, luego es necesario definir cuáles serán las claves utilizadas.
+
+\begin{itemize}
+\item La \textbf{clave privada} es un entero aleatorio $d$ elegido en el intervalo $[1,n-1]$.
+\item La \textbf{clave pública} es el punto de la curva $H = dG$.
+\end{itemize}
+
+Conociendo $d$ y $G$ es fácil encontrar $H$, mientras que conociendo $G$ y $H$ es complejo, como se explicó en la Sección \ref{sec:log}, ya que requiere resolver el problema del logaritmo discreto.
+
+
+\subsection{ECDH}
+ECDH (\textit{Elliptic Curve Diffie Hellman}) es un protocolo para el intercambio de claves basado en Diffie-Hellman. La situación a resolver es la siguiente: Alice y Bob quieren comunicarse de forma privada sin que Carol pueda descifrar sus mensajes. Alice y Bob pueden usar ECDH para generar e intercambiar las claves que les permitan mantener un intercambio de mensajes seguro siguiendo los pasos a continuación:
+
+\begin{enumerate}
+\item Comienzan generando sus propias claves. Alice generará su clave privada, $d_A$ y a partir de ella calculará su clave pública $H_A = d_AG$. Bob actuará de la misma forma para obtener sus claves privada, $d_B$, y pública, $H_B = d_BG$. Notamos que los dos deben usar los mismos parámetros, utilizarán el mismo generador $G$ en la misma curva elíptica definida sobre el mismo cuerpo finito.
+
+\item Alice y Bob intercambian sus claves públicas, $H_A$ y $H_B$ mediante un canal potencialmente inseguro. Carol podría interceptarlas, pero no será capaz de descubrir sus claves privadas sin resolver el problema del logaritmo discreto.\\
+\item Para calcular la clave compartida, Alice calcula $S = d_AH_B$ usando su clave privada y la clave pública de Bob. Análogamente, Bob calcula esta clave compartida, será el punto $S = d_BH_A$. Comprobamos que, efectivamente, el punto $S$ es el mismo en ambos casos:
+  \[S = d_AH_b = d_A(d_BG) = d_B(d_AG) = d_BH_A = S.\]
+\end{enumerate}
+
+Carol, sin embargo, solo conoce $H_A$ y $H_B$ y a partir de estos puntos es incapaz de determinar la clave compartida $S$. Este es el problema de Diffie-Hellman que, en este contexto, se enuncia:
+
+\begin{quote}
+  Dados tres puntos $P, aP,$ y $bP$, ¿cuál es el punto resultante de $abP$?
+\end{quote}
+
+Se cree que el problema de Diffie-Hellman para curvas elípticas es tan complejo como el problema del logaritmo discreto, aunque no se ha probado.
+
+Ahora que Alice y Bob tienen su clave compartida pueden intercambiar mensajes mediante cifrado simétrico, como AES o DES.
 
 \subsection{ECDSA}
 
@@ -375,8 +410,6 @@ Ahora despejamos \textit{$d_S$} de la definición de \textit{s} y obtenemos que:
 \end{align}
 
 Así hemos conseguido la clave privada con los valores que conocemos.
-
-\subsection{ECDH}
 
 \subsection{Comparación con RSA}
 
