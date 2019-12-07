@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 
 %Tipo de letra y color
-\usepackage{FiraSans}                 % Fuente sans serif
+\usepackage{FiraSans}        % Fuente sans serif
 \usepackage[usenames]{color}
 \definecolor{ColorTitulo}{RGB}{169,50,38}
 
@@ -25,24 +25,6 @@
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
-
-%% \lstset{frame=tb,
-%%   language=Sage,
-%%   aboveskip=3mm,
-%%   belowskip=3mm,
-%%   showstringspaces=false,
-%%   columns=flexible,
-%%   basicstyle={\small\ttfamily},
-%%   numbers=none,
-%%   numberstyle=\tiny\color{gray},
-%%   keywordstyle=\color{blue},
-%%   commentstyle=\color{dkgreen},
-%%   stringstyle=\color{mauve},
-%%   breaklines=true,
-%%   breakatwhitespace=true,
-%%   tabsize=3
-%% }
-
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -76,6 +58,7 @@
 \setlength{\oddsidemargin}{6mm}
 \setlength{\evensidemargin}{28mm}
 \setlength{\topmargin}{-10mm}
+\setlength\parindent{0pt}
 
 %Símbolo para las listas
 \usepackage{listings}
@@ -88,7 +71,6 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-%\rhead[R]{\MakeUppercase{\rightmark}}
 \lhead[L]{\MakeUppercase{\textit{Curva Elíptica}}}
 \fancyfoot[R]{\thepage}
 
@@ -97,9 +79,27 @@
 \renewcommand{\headrulewidth}{0pt} 
 
 %Índice
-\addtocontents{toc}{\hspace{-7.5mm} \textbf{Secciones}}
+\addtocontents{toc}{\textbf{Secciones}}
 \addtocontents{toc}{\hfill \textbf{Página} \par}
 \addtocontents{toc}{\vspace{-2mm} \hspace{-7.5mm} \hrule \par}
+
+% Enlaces y colores
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  citecolor=ColorTitulo,
+  urlcolor=ColorTitulo,
+  linkcolor=ColorTitulo
+}
+
+% Bibliografía
+
+\usepackage[sorting=none, style=apa, isbn=true]{biblatex}
+\DefineBibliographyStrings{spanish}{
+  urlseen = {Último acceso},
+  retrieved = {Último acceso},
+}
+\addbibresource{bibliografia.bib}
 
 %Apéndices
 \usepackage[toc,title,page]{appendix}
@@ -139,31 +139,40 @@ María Victoria Granados Pozo\\
 
 \section{Introducción}
 
-% Comentar que usaremos Sage en algún momento
+En el desarrollo de la criptografía, con el objetivo de poder mantener comunicaciones de forma privada, se pasó de sistemas más simples, como el \textit{cifrado de César}, a sistemas más complejos, como el \textit{cifrado de Vigenère}. Estos criptosistemas que eran de tipo simétrico tenían un problema, el intercambio de claves. Tratando de evitar este problema surgen, en la década de los 70, los criptosistemas asimétricos o de clave pública. Dentro de este grupo se encuentra la criptografía de la curva elíptica que expondremos en este trabajo.\\
+
+En 1985 es cuando por primera vez surge la idea de utilizar esta herramienta matemática con fines criptográficos, adaptando el problema del logaritmo discreto para obtener una analogía en puntos de una curva elíptica en vez de en un cuerpo finito.\\
+
+El trabajo desarrollado comienza con una exposición, en la Sección \ref{sec:curva}, sobre las curvas elípticas. Se muestra su definición y las operaciones de suma y producto por escalares utilizadas para definir una estructura de grupo sobre las mismas. Además, se comenta cómo conseguir un subgrupo a partir de un punto de la curva, pues será necesario para las aplicaciones criptográficas. Continuamos en la Sección \ref{sec:log} formular el problema del logaritmo discreto y la dificultad para resolverlo, pues en ello reside la seguridad de la criptografía de la curva elíptica. Pasamos entonces, en la Sección \ref{sec:alg}, a explicar dos algoritmos utilizados en la criptografía de la curva elíptica: ECDH (para el intercambio de claves) y ECDSA (para firmar mensajes).
+% También analizamos/recogemos las curvas recomendadas en los estándares...
+¿curvas en los estándares?
+Por último, se compara los sistemas basados en curvas elípticas con los basados en RSA, que es otro criptosistema de clave pública que compitió con la criptografía de la curva elíptica en sus inicios.\\
+
+Además, se ha utilizado SageMath para representar curvas elípticas y para realizar una implementación propia del algoritmo ECDSA, puesto que esta herramienta contiene funciones específicas para el tratamiento de curvas elípticas. El código se encuentra...
+
+% ¿TODO: código en apéndice o en carpeta?
 
 \section{Curva Elíptica}
-% Escribo esta sección inspirándome en el capítulo 2 de ``Elliptic Curves Number theory and cryptography'' y comparándo con otros artículos
+\label{sec:curva}
 Antes de entrar en cómo usar las curvas elípticas en criptografía debemos definirlas y estudiar su estructura de grupo.
 
 Una curva elíptica será el conjunto de puntos que verifiquen la ecuación:
 \[y^2 = x^3 + ax + b,\]
-donde $a$ y $b$ son constantes y verifican $4a^3+27b \neq 0$\footnote{Imponemos esta condición para que la curva no presente raíces múltiples, que pueden dar problemas en la teoría general que expondremos. Se pueden tratar ambos casos de forma individual aunque nosotros no incluiremos estas excepciones en nuestro trabajo}. Esta ecuación es la \textbf{ecuación de Weierstrass} para curvas elípticas. Normalmente, $a, b, x, y$ toman valores en un cuerpo. Por ejemplo: los números reales $\mathbb{R}$, los números complejos $\mathbb{C}$, los números racionales $\mathbb{Q}$, un cuerpo finito $\mathbb{F}_p$ para un primo $p$ (este es el que se utiliza en criptografía habitualmente), un cuerpo finito $\mathbb{F}_q$ donde $q = p^k,$ $k \ge 0$, \dots
+donde $a$ y $b$ son constantes y verifican $4a^3+27b \neq 0$\footnote{Imponemos esta condición para que la curva no presente raíces múltiples, que pueden dar problemas en la teoría general que expondremos, al generar curvas con autointersecciones, picos, etc. }. Esta ecuación es la \textbf{ecuación de Weierstrass} para curvas elípticas\footnote{Existe una versión generalizada de esta ecuación que aporta mayor flexibilidad. Se puede transformar fácilmente una forma a la otra (\cite{washington_elliptic_2008}).}. Normalmente, $a, b, x, y$ toman valores en un cuerpo. Por ejemplo: los números reales $\mathbb{R}$, los números complejos $\mathbb{C}$, los números racionales $\mathbb{Q}$, un cuerpo finito $\mathbb{F}_p$ para un primo $p$ (este es el que se utiliza en criptografía habitualmente), un cuerpo finito $\mathbb{F}_q$ donde $q = p^k,$ $k \ge 0$, etc.
 
 De forma general, consideramos un cuerpo $K$ y definimos la curva elíptica $E$ sobre él de la siguiente forma:
-\[E = \{(x,y) \in K\times K : y^2 = x^3 + ax +b\} \cup \{\infty\}.
+\[E = \{(x,y) \in K\times K : y^2 = x^3 + ax +b,\ 4a^3+27b \neq 0\} \cup \{\infty\}.
 \]
-El punto $\infty$ lo incluimos por definición. Lo podemos imaginar como un punto que se encuentra en la parte alta del eje y, pero también en la parte de abajo. Una línea que pase por este punto será una línea vertical, luego dos líneas verticales distintas coinciden en este punto.
+El punto $\infty$ lo incluimos por definición. Una línea que pase por este punto será una línea vertical, luego dos líneas verticales distintas se intersecan en este punto.
 
-Podemos usar Sage para visualizar algunos ejemplos de curvas elípticas. En el Código \ref{cod:EC} observamos la forma genérica de definir en Sage curvas elípticas.
+Podemos usar SageMath para visualizar algunos ejemplos de curvas elípticas. En el Código \ref{cod:EC} observamos la forma genérica de definir en SageMath curvas elípticas.
 
-%TODO: arreglar colores
-% TODO: probar con language=Python
 \begin{lstlisting}[label={cod:EC}, caption={Curva elíptica en Sage}, morekeywords={sage}]
 sage:  E = EllipticCurve(K, [a, b]); E
 Elliptic Curve defined by y^2  = x^3 + x + 3 over a field K
 \end{lstlisting}
 
-El Código \ref{cod:ej1} es el necesario para crear la curva con ecuación de WeiErstrass $y^2=x^3-x$.
+El Código \ref{cod:ej1} es el necesario para crear la curva con ecuación de Weierstrass $y^2=x^3-x$.
 
 \begin{lstlisting}[label={cod:ej1}, caption={Curva elíptica $y^2=x^3-x$}, morekeywords={sage}]
 sage: E =  EllipticCurve(RR, [-1, 0]);
@@ -199,7 +208,7 @@ En la Figura \ref{fig:EllipticCurveCatalog} tenemos una tabla con la forma de la
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{EllipticCurveCatalog}
-    \caption{Ejemplos de curvas elípticas}
+    \caption{Ejemplos de curvas elípticas sobre $\mathbb{R}$ []}
     \label{fig:EllipticCurveCatalog}
 \end{figure}
 
@@ -208,9 +217,9 @@ En la Figura \ref{fig:EllipticCurveCatalog} tenemos una tabla con la forma de la
 \subsection{Estructura de grupo}
 Dada una curva elíptica podemos definir un grupo abeliano formado por puntos de la misma. 
 \begin{enumerate}
-\item Tomamos como elemento neutro el punto del infinito $ \{\infty\} $.
-\item El opuesto de un punto $ P $ viene dado por su simétrico por el eje $ X $. Más concretamente, si $ P = (x_P, y_P) $ entonces $ -P = (x_P, -y_P) $.
-\item En general, dados dos puntos de la curva $ P = (x_P, y_P) $ y $ Q = (x_Q, y_Q) $ con $ x_P \neq y_P $, su suma es el punto $ -R $ que viene definida por:
+\item Tomamos como elemento neutro el punto del infinito $\infty$.
+\item El opuesto de un punto $ P $ viene dado por su simétrico por el eje de abscisas. Más concretamente, si $ P = (x_P, y_P) $ entonces $ -P = (x_P, -y_P) $.
+\item En general, dados dos puntos de la curva $ P = (x_P, y_P) $ y $ Q = (x_Q, y_Q) $ con $ x_P \neq x_Q $, su suma es el punto $ -R $ que viene definida por:
 \[
 (x_R, -y_R) =(m^2 − x_P − x_Q, -y_P - m(x_R − x_P )) = (m^2 − x_P − x_Q, -y_Q - m(x_R − x_Q )),
 \]
@@ -218,9 +227,10 @@ donde
 \[
 m = \frac{y_P-y_Q}{x_P-x_Q}.
 \]
-Puede causar asombro que definamos $ P+Q=-R $. Esto se deba al sentido geométrico de la suma en la curva. Esta operación debe seguir la siguiente regla: ``dados tres puntos $ P$, $ Q $ y $ R $ alineados y no nulos su suma $ P + Q + R $ debe ser el elemento neutro''. Por lo tanto, $ P +Q $ es el opuesto al punto de corte de la recta que une ambos puntos. De ahí también notamos la presencia del signo menos en la segunda coordenada tal y como indicamos en el punto anterior sobre los opuestos. También notar que el sentido geométrico nos aporta intuitivamente la conmutatividad ya que la recta tangente es la misma en el caso $ P+Q $ y $ Q+P $ y la asociatividad ya que $ (P+Q) + R = P + (Q+R) = (P+R) + Q$ (y las demás posibilidades).\\
+Definimos $ P+Q=-R $ debido al sentido geométrico de la suma en la curva. Esta operación debe seguir la siguiente regla: ``dados tres puntos $ P$, $ Q $ y $ R $ alineados y no nulos su suma $ P + Q + R $ debe ser el elemento neutro''. Por lo tanto, $ P +Q $ es el opuesto al punto de corte de la recta que une ambos puntos con la curva. De ahí también notamos la presencia del signo menos en la segunda coordenada tal y como indicamos en el punto anterior sobre los opuestos. El sentido geométrico nos aporta intuitivamente la conmutatividad ya que la recta tangente es la misma en el caso $ P+Q $ y $ Q+P $ y la asociatividad ya que $ (P+Q) + R = P + (Q+R) = (P+R) + Q = \infty$.\\
 
-No podemos usar estas fórmulas en algunos casos especiales, por ejemplo cuando $ P=Q $. En este caso no existe una sola recta que pase por ``ambos'' puntos. Sin embargo, si nos aproximamos a $ Q $ mediante puntos $ Q' $ con $ Q' \neq P $ en seguida vemos que la recta que obtendríamos es la tangente en $ P $. Así, definimos su suma como el opuesto del punto de intersección de la recta tangente en $ P $. Otra situación interesante es cuando $ P \neq Q $ pero no hay más puntos de corte. Nos encontramos en un caso parecido al anterior ya que uno de los puntos es tangente a la curva. Si suponemos que $ P $ es donde se da la tangencia, por el caso anterior tememos que $ P + P = -Q $ por lo que $ P + Q = -P $. En estas situaciones de tangencia tenemos que:
+No podemos usar estas fórmulas en algunos casos especiales, por ejemplo cuando $ P=Q $. En este caso no existe una sola recta que pase por ``ambos'' puntos. Sin embargo, si nos aproximamos a $ Q $ mediante puntos $ Q' $ con $ Q' \neq P $ en seguida vemos que la recta que obtendríamos es la tangente en $ P $. Así, definimos su suma como el opuesto del punto de intersección de la recta tangente en $ P $.\\
+Otra situación interesante es cuando $ P \neq Q $ pero no hay más puntos de corte. Nos encontramos en un caso parecido al anterior ya que uno de los puntos es tangente a la curva. Si suponemos que $ P $ es donde se da la tangencia, por el caso anterior tememos que $ P + P = -Q $ por lo que $ P + Q = -P $. En estas situaciones de tangencia tenemos que:
 \[
 m = \frac{3x^{2}_P + a}{2y_P}.
 \]
@@ -232,7 +242,7 @@ nP =
 \begin{cases}
  (P+\stackrel{n}{\cdots}+P) &\text{si } n > 0\\
 0 &\text{si } n = 0\\
-(-P\stackrel{n}{\cdots}-P) &\text{si } n < 0\\
+(-P-\stackrel{n}{\cdots}-P) &\text{si } n < 0\\
 \end{cases}.
 \]
 \end{enumerate}
@@ -242,20 +252,19 @@ Notamos que si, $ n, m \in \mathbb{Z} $ y $ P \in E $ se cumple que:
 \[
 nP + mP = (n+m)P.
 \]
-Así, los múltiplos de $ P $ son cerrados bajo la suma. Obtenemos de este modo que los múltiplos de un punto de la curva forman un subgrupo cíclico. Nos preguntamos ahora cuál es el orden de dichos subgrupos, es decir, debemos encontrar el mínimo $ n \in \mathbb{N} $ que cumpla $ nP = \infty $. Para su cálculo debemos tener en cuenta el Teorema de Lagrange que nos dice que si $ H $ es un subgrupo de $ G $ entonces el orden de $ H $ es un divisor del orden de $ G $. El orden del grupo de la curva elíptica lo podemos calcular en tiempo polinomial gracias al algoritmo de Schoof. De este modo, como tenemos el orden del grupo formado por la curva elíptica que notamos como $ N $, el orden del subgrupo con generador $ P $ queda determinado por:
+Así, los múltiplos de $ P $ son cerrados bajo la suma. Obtenemos de este modo que los múltiplos de un punto de la curva forman un subgrupo cíclico. Nos preguntamos ahora cuál es el orden de dichos subgrupos, es decir, debemos encontrar el mínimo $ n \in \mathbb{N} $ que cumpla $ nP = \infty $. Para su cálculo debemos tener en cuenta el Teorema de Lagrange que nos dice que si $ S $ es un subgrupo de $ H $ entonces el orden de $ S $ es un divisor del orden de $ H $. El orden del grupo de la curva elíptica lo podemos calcular en tiempo polinomial gracias al algoritmo de Schoof[]. De este modo, como tenemos el orden del grupo formado por la curva elíptica que notamos como $ N $, el orden del subgrupo con generador $ P $ queda determinado por:
 \[
 \min\{ n \in \mathbb{N}:\text{ } nP = \infty \text{ y } n | N\}.
 \]
-
-Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegir el orden del subgrupo que queremos y posteriormente encontrar el generador de la siguiente. Si el orden del subgrupo que queremos es un primo $ p $ el proceso a seguir es calcular el cofactor $ h = N/n $, tomar un punto aleatorio $ P \in E $ y obtener $ hP $. Si es 0, tomar un nuevo punto y si no $ P $ es el generador deseado. Como anotación, los órdenes de los subgrupos se suelen escoger de orden primo ya que Pohlig y Hellman probaron que un criptosistema es seguro si, y solo si, no es factible el cálculo del logaritmo discreto en grupos con orden un primo (REFERENCIAR). En la siguiente sección exponemos el problema del logaritmo discreto en el contexto de las curvas elípticas. \\
+Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegimos el orden del subgrupo que queremos y posteriormente hallamos el generador. Si el orden del subgrupo es un primo $ p $ el proceso a seguir es el siguiente: calculamos el cofactor $ h = N/n $, tomamos un punto aleatorio $ P \in E $ y obtenemos $ hP $. Si es $\infty$, tomamos un nuevo punto y si no, $ P $ es el generador deseado. Los órdenes de los subgrupos se suelen escoger de orden primo ya que Pohlig y Hellman probaron que un criptosistema es seguro si, y solo si, no es factible el cálculo del logaritmo discreto en grupos con orden un primo (REFERENCIAR). En la siguiente sección exponemos el problema del logaritmo discreto en el contexto de las curvas elípticas. \\
 %----
 \section{El problema del logaritmo discreto}
 \label{sec:log}
-La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo el de otros criptosistemas como el Digital Signature Algorithm (DSA) o el intercambio de llaves mediante el mecanismo de Diffie-Hellman.
+La seguridad de la criptografía de la curva elíptica reside en la dificultad para calcular logaritmos discretos. Este problema es análogo al de otros criptosistemas como el \textit{Digital Signature Algorithm} (DSA) o el intercambio de claves mediante el mecanismo de Diffie-Hellman.\\
 
-En nuestro caso, el problema consiste en lo siguiente: ``si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ?`podemos encontrar un $ k $ tal que $ Q = kP $? ''. Vemos que no estamos calculando un logaritmo como tal pero se sigue usando ese término por analogía a otros sistemas como se ha mencionado anteriormente. 
+En nuestro caso, el problema consiste en lo siguiente: ``si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ?`podemos encontrar un $ k $ tal que $ Q = kP $? ''. Vemos que no estamos calculando un logaritmo como tal pero se sigue usando ese término por analogía a otros sistemas como se ha mencionado anteriormente.\\
 
-Actualmente, no existe ninguna demostración matemática que efectivamente pruebe la dificultad de dicho cálculo. Solo sabemos que es difícil pero no podemos estar seguros. Con el siguiente ejemplo ilustramos su complejidad. Para ello usamos un algoritmo ``Baby-step, giant-step'' que se basa en el hecho de que cualquier entero $ x $ puede expresar como $ x = am+b $ con $ a,m \text{ y } b$ también enteros. Escribimos entonces:
+Actualmente, no existe ninguna demostración matemática que efectivamente pruebe la dificultad de dicho cálculo. Solo sabemos que es difícil pero no podemos estar seguros. Con el siguiente ejemplo ilustramos su complejidad. Para ello usamos el algoritmo \textit{Baby-step, giant-step} que se basa en el hecho de que cualquier entero $ x $ puede expresar como $ x = am+b $ con $ a,m \text{ y } b$ también enteros. Escribimos entonces:
 \begin{equation*}
 \begin{split}
 Q &= xP \\
@@ -263,22 +272,22 @@ Q &= xP \\
   &=amP + bP.
 \end{split}
 \end{equation*}
-Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en en calcular algunos valores de $ bP $ y otros de $ Q-amP $ hasta que encontremos una correspondencia. El algoritmo también indica que debemos escoger $ m = \sqrt{n} $ y los números $ a $ y $ b $ se mueven entre 0 y $ m $ por lo que mientras $ bP $ tiene incrementos pequeños (``baby'') $ amP $ los tiene grandes (``huge''). Este método nos aporta una complejidad tanto en tiempo como en memoria de $ O(\sqrt{n}) $, es decir, exponencial pero es mejor que uno de fuerza bruta. De todos modos sigue siendo intratable ya que para un $  n  $ tal que $ \sqrt{n} = 7.922816251426434 \times 10^{28} $ el almacenamiento de datos que podemos llegar a necesitar es de $ 2,5\times10^{30} $ bytes de memoria (la capacidad de almacenamiento mundial es de aproximadamente $ 10^{21} $ bytes). \\
+Así, podemos expresar $ Q - amP  = bP $. El algoritmo consiste en calcular algunos valores de $ bP $ y otros de $ Q-amP $ hasta que encontremos una correspondencia. El algoritmo también indica que debemos escoger $ m = \sqrt{n} $ y los números $ a $ y $ b $ se mueven entre 0 y $ m $ por lo que mientras $ bP $ tiene incrementos pequeños (\textit{baby}) $ amP $ los tiene grandes (\textit{huge}). Este método nos aporta una complejidad tanto en tiempo como en memoria de $ O(\sqrt{n}) $, es decir, exponencial pero es mejor que uno de fuerza bruta. De todos modos sigue siendo intratable ya que para un $  n  $ tal que $ \sqrt{n} = 7.922816251426434 \times 10^{28} $ el almacenamiento de datos que podemos llegar a necesitar es de $ 2,5\times10^{30} $ bytes de memoria (la capacidad de almacenamiento mundial es de aproximadamente $ 10^{21} $ bytes). \\
 
 \section{Algoritmos}
-
+\label{sec:alg}
 Los algoritmos criptográficos basados en curvas elípticas (ECC, por sus siglas en inglés \textit{Elliptic Curve Cryptography}) surgen por primera vez en el año 1984 y muchos de ellos son adaptaciones de algoritmos ya existentes para utilizarlos en el grupo definido por una curva elíptica. En esta sección nos centraremos en dos de esos algoritmos: ECDSA y ECDH, uno de firma y otro de intercambio de claves.
 
-Expuestas todas las herramientas necesarias, falta determinar cuáles son los parámetros necesarios para los algoritmos. Serán una ¿seis-upla? $ (p, a, b, G, n, h) $, donde:
+Expuestas todas las herramientas necesarias, falta mencionar cuáles son los parámetros necesarios para los algoritmos. Serán una séxtupla $ (p, a, b, G, n, h) $, donde:
 \begin{itemize}
 	\item $ p $ es un número primo.
 	\item $ a, b $ son los coeficientes de la curva elíptica, hay que elegirlos con cuidado para garantizar que el algoritmo sea seguro.
-	\item $ G $ es el generador del grupo.
-	\item $ n $ es el orden del grupo.
+	\item $ G $ es el generador del subgrupo.
+	\item $ n $ es el orden del subgrupo.
 	\item $ h $ es el cofactor del subgrupo.
 \end{itemize}
 
-En ocasiones también se añade a estos parámetros una semilla $S$ que se utiliza mediante una función hash para calcular el orden del grupo o los coeficientes de la curva, de esta forma no dependeríamos de la seguridad de una curva específica.
+En ocasiones también se añade a estos parámetros una semilla que se utiliza mediante una función \textit{hash} para calcular el orden del grupo o los coeficientes de la curva, de esta forma no dependeríamos de la seguridad de una curva específica.
 
 La ECC es un tipo de sistema de clave pública, luego es necesario definir cuáles serán las claves utilizadas.
 
@@ -287,25 +296,22 @@ La ECC es un tipo de sistema de clave pública, luego es necesario definir cuál
 \item La \textbf{clave pública} es el punto de la curva $H = dG$.
 \end{itemize}
 
-Conociendo $d$ y $G$ es fácil encontrar $H$, mientras que conociendo $G$ y $H$ es complejo, como se explicó en la Sección \ref{sec:log}, ya que requiere resolver el problema del logaritmo discreto.
+Conociendo $d$ y $G$ es fácil encontrar $H$, mientras que conociendo $G$ y $H$ es complejo hallar $d$, como se explicó en la Sección \ref{sec:log}, ya que requiere resolver el problema del logaritmo discreto.
 
 
 \subsection{ECDH}
 ECDH (\textit{Elliptic Curve Diffie Hellman}) es un protocolo para el intercambio de claves basado en Diffie-Hellman. La situación a resolver es la siguiente: Alice y Bob quieren comunicarse de forma privada sin que Carol pueda descifrar sus mensajes. Alice y Bob pueden usar ECDH para generar e intercambiar las claves que les permitan mantener un intercambio de mensajes seguro siguiendo los pasos a continuación:
 
 \begin{enumerate}
-\item Comienzan generando sus propias claves. Alice generará su clave privada, $d_A$ y a partir de ella calculará su clave pública $H_A = d_AG$. Bob actuará de la misma forma para obtener sus claves privada, $d_B$, y pública, $H_B = d_BG$. Notamos que los dos deben usar los mismos parámetros, utilizarán el mismo generador $G$ en la misma curva elíptica definida sobre el mismo cuerpo finito.
+\item Comienzan generando sus propias claves. Alice generará su clave privada, $d_A$ y a partir de ella calculará su clave pública $H_A = d_AG$. Bob actuará de la misma forma para obtener sus claves privada, $d_B$, y pública, $H_B = d_BG$. Notamos que los dos deben usar el mismo generador $G$ en la misma curva elíptica definida sobre el mismo cuerpo finito.
 
-\item Alice y Bob intercambian sus claves públicas, $H_A$ y $H_B$ mediante un canal potencialmente inseguro. Carol podría interceptarlas, pero no será capaz de descubrir sus claves privadas sin resolver el problema del logaritmo discreto.\\
-\item Para calcular la clave compartida, Alice calcula $S = d_AH_B$ usando su clave privada y la clave pública de Bob. Análogamente, Bob calcula esta clave compartida, será el punto $S = d_BH_A$. Comprobamos que, efectivamente, el punto $S$ es el mismo en ambos casos:
-  \[S = d_AH_b = d_A(d_BG) = d_B(d_AG) = d_BH_A = S.\]
+\item Alice y Bob intercambian sus claves públicas, $H_A$ y $H_B$, mediante un canal potencialmente inseguro. Carol podría interceptarlas, pero no será capaz de descubrir sus claves privadas sin resolver el problema del logaritmo discreto.\\
+\item Para calcular la clave compartida, Alice calcula $C = d_AH_B$ usando su clave privada y la clave pública de Bob. Análogamente, Bob calcula esta clave compartida, será el punto $C = d_BH_A$. Comprobamos que, efectivamente, el punto $C$ es el mismo en ambos casos:
+  \[C = d_AH_b = d_A(d_BG) = d_B(d_AG) = d_BH_A = C.\]
 \end{enumerate}
 
-Carol, sin embargo, solo conoce $H_A$ y $H_B$ y a partir de estos puntos es incapaz de determinar la clave compartida $S$. Este es el problema de Diffie-Hellman que, en este contexto, se enuncia:
-
-\begin{quote}
-  Dados tres puntos $P, aP,$ y $bP$, ¿cuál es el punto resultante de $abP$?
-\end{quote}
+Carol, sin embargo, solo conoce $H_A$ y $H_B$ y a partir de estos puntos es incapaz de determinar la clave compartida $C$. Este es el problema de Diffie-Hellman que, en este contexto, se enuncia:
+  ``Dados tres puntos $P, aP,$ y $bP$, ¿cuál es el punto resultante de $abP$?''.
 
 Se cree que el problema de Diffie-Hellman para curvas elípticas es tan complejo como el problema del logaritmo discreto, aunque no se ha probado.
 
@@ -313,44 +319,41 @@ Ahora que Alice y Bob tienen su clave compartida pueden intercambiar mensajes me
 
 \subsection{ECDSA}
 
-ECDSA es un algoritmo de firma digital, Elliptic Curve Digital Signature Algorithm, es una variante del algoritmo DSA (Digital Signature Algortihm) aplicado a curvas elípticas. Trabaja con el hash del mensaje en lugar de con el propio mensaje. La elección de la función hash es importante, de esto dependerá la seguridad del sistema criptográfico. El hash del mensaje tendrá una longitud de \textit{n} bit.
+ECDSA es un algoritmo de firma digital, \textit{Elliptic Curve Digital Signature Algorithm}, es una variante del algoritmo DSA (\textit{Digital Signature Algortihm}) aplicado a curvas elípticas. Trabaja con el \textit{hash} del mensaje en lugar de con el propio mensaje. La elección de la función \textit{hash} es importante, de esto dependerá la seguridad del sistema criptográfico. El \textit{hash} del mensaje tendrá una longitud de \textit{n} bits\footnote{Si la longitud fuera mayor que $n$, lo truncamos.}, lo denotamos por \textit{z}.
 
-Imaginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y la otra persona, Bob, quiere validar la firma con la llave pública de Alice ($H_{A}$). Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su llave pública puede verificarlas.
+Imaginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y la otra persona, Bob, quiere validar la firma con la clave pública de Alice ($H_{A}$). Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su clave pública puede verificarlas.
 
-Alice y Bob están usando los parámetros del dominio. El hash truncado lo denotaremos por \textit{z}.
+Alice y Bob están usando los mismos parámetros del dominio.
 
 \subsubsection*{Firma del mensaje}
-Algoritmo de firma del mensaje de Alice, a partir de \textit{k} y \textit{z} se genera la firma con la clave privada de Alice:
-
+A partir de \textit{k} y \textit{z} se genera la firma con la clave privada de Alice:
 
 \begin{enumerate}
-	\item Tomamos un entero $ k $ de forma aleatorio en el conjunto $ \{ 1, ..., n-1\} $.
-	\item Calcular \textit{P} = \textit{kG}.
-	\item Calcular el número \textit{r = $x_{P} \mod n$}.
+	\item Tomamos un entero $ k $ de forma aleatoria en el conjunto $ \{ 1, ..., n-1\} $.
+	\item Calculamos \textit{P} = \textit{kG}.
+	\item Hallamos el número \textit{$r \equiv x_{P} \mod n$}.
 	\item Si \textit{r} es 0 entonces se toma otro \textit{k} y se intenta de nuevo.
-	\item Se calcula \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_{A}$}) mod \textit{n}  con \textit{$k^{-1}$} el inverso multiplicativo de \textit{k} módulo \textit{n}.
-	\item Si \textit{s} es 0 entonces se elige otro \textit{k} y se vuelve al principio.
+	\item Calculamos $s \equiv k^{-1}(z + rd_{A}) \mod n$  con \textit{$k^{-1}$} el inverso multiplicativo de \textit{k} módulo \textit{n}.
+	\item Si \textit{s} es 0 entonces elegimos otro \textit{k} y volvemos al principio.
 \end{enumerate} 
 
-Al final obtendremos la firma que será la pareja (\textit{r}, \textit{s}) 
+Al final obtendremos la firma que será la pareja (\textit{r}, \textit{s}).
 
-
-Si el subgrupo tiene orden no primo, entonces el algoritmo ECDSA no se puede usar.
 
 \subsubsection*{Verificación de la firma}
-Ahora entra en juego Bob que para validar la firma, a partir del mensaje firmado y de \textit{z} con la clave pública de Alice \textit{$H_A$}.
+Ahora entra en juego Bob que quiere validar la firma, $(r,s)$, a partir del mensaje recibido con valor \textit{hash} \textit{z} y de la clave pública de Alice \textit{$H_A$}.
 
 \begin{enumerate}
-	\item Calcular \textit{$u_1$} = \textit{$s^{-1}$ z} mod\textit{n}
-	\item Calcular \textit{$u_2$} = \textit{$s^{-1}$ r} mod\textit{n}
-	\item Calcular el punto \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}	
+	\item Calculamos $u_1 \equiv$ \textit{$s^{-1}$ z} mod\textit{n}.
+	\item Calculamos $u_2 \equiv$ \textit{$s^{-1}$ r} mod\textit{n}.
+	\item Calculamos el punto \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}.	
 \end{enumerate}
 
 La firma solo es válida si \textit{r} = \textit{$x_P$} mod\textit{n}
 
 
 \subsubsection*{Exactitud del algoritmo}
-Veamos que esta definición de \textit{P} del punto 3 con la definición anterior de \textit{P} = \textit{kG}
+Veamos que esta definición de \textit{P} del punto 3 coincide con la definición original de \textit{P} = \textit{kG}.
 
 Partimos de \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}, sustituimos el valor de la clave pública \textit{$H_A$} = \textit{$d_A$G}
 
@@ -358,7 +361,7 @@ Partimos de \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}, sustituimos el v
 \begin{align}
 \begin{split}
 \textit{P} &= \textit{$u_1$G} + \textit{$u_2$$H_A$}\\ &= \textit{$u_1$G} + \textit{$u_2$$d_A$G}\\
-&= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}\\
+&= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}.\\
 \end{split}
 \end{align}
 
@@ -368,35 +371,35 @@ Sustituimos los valores de $u_1$ y $u_2$ que hemos declarado en la verificación
 \begin{split}
 P &= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}\\
 &= (\textit{$s^{-1}$z} + \textit{$s^{-1}$r$d_A$}) \textit{G}\\
-&= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}\\
+&= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}.\\
 \end{split}
 \end{align}
 
-Como el subgrupo cíclico de orden \textit{n} en el que estamos trabajando está generado por \textit{G} por tanto no hace falta poner ``mod \textit{n}'' si múltiplicamos por \textit{G}.
+Como el subgrupo cíclico de orden \textit{n} en el que estamos trabajando está generado por \textit{G} no hace falta poner ``mod \textit{n}'' si multiplicamos por \textit{G}.
 
 
-Ahora nos fijamos en la definición de \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}. Multiplicamos por \textit{k} a ambos lados y dividimos por \textit{s} y obtenemos: \textit{k} = \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}
+Ahora nos fijamos en la definición de \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}. Multiplicamos por \textit{k} a ambos lados y dividimos por \textit{s} y obtenemos: \textit{k} = \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}.
 
 \begin{align}
 \begin{split}
 P &= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}\\
-&= \textit{kG}
+&= \textit{kG}.
 \end{split}
 \end{align}
 
 
 \subsubsection*{Importancia de \textit{k}}
 
-Es importante el valor que escojamos de \textit{k} la clave secreta. Si además siempre firmamos con el mismo valor de \textit{k} y con los mismos valores aleatorios, para los atacantes serían más fácil encontrar la clave privada.
+Es importante el valor que escojamos de \textit{k} el entero aleatorio utilizado para firmar. Si además siempre firmamos con el mismo valor de \textit{k} y con los mismos valores aleatorios, para los atacantes será más fácil encontrar la clave privada.
 
-Para descubrir la clave privada \textit{$d_S$} necesitamos calcular \textit{k} a partir de los hashes \textit{$z_1$} y \textit{$z_2$} y de las correspondientes firmas (\textit{$r_1$}, \textit{$s_1$}) y (\textit{$r_2$}, \textit{$s_2$})
+Para descubrir la clave privada \textit{$d_S$} necesitamos calcular \textit{k} a partir de los valores \textit{hash} \textit{$z_1$} y \textit{$z_2$} y de las correspondientes firmas (\textit{$r_1$}, \textit{$s_1$}) y (\textit{$r_2$}, \textit{$s_2$}).
 
 
 \begin{enumerate}
 	\item $r_1$ es igual a $r_2$, puesto que \textit{r} = \textit{$x_P$} mod \textit{n} y \textit{P} = \textit{kG} es el mismo para las dos firmas.
-	\item Observamos que  $(\textit{$s_1$} - \textit{$s_2$})$ mod\textit{n} = \textit{$k^{-1}$} $(\textit{$z_1$} - \textit{$z_2$})$ mod\textit{n} viene directamente de la definición de \textit{s}
-	\item \textit{k}$(\textit{$s_1$} - \textit{$s_2$}) mod\textit{n}$ = $(\textit{$z_1$} - \textit{$z_2$}) mod\textit{n}$
-	\item \textit{k}  = $(\textit{$z_1$} - \textit{$z_2$}) (\textit{$s_1$} - \textit{$s_2$})^{-1}$ mod\textit{n}
+	\item Observamos que  $(\textit{$s_1$} - \textit{$s_2$})$ mod\textit{n} = \textit{$k^{-1}$} $(\textit{$z_1$} - \textit{$z_2$})$ mod\textit{n} viene directamente de la definición de \textit{s}.
+	\item \textit{k}$(\textit{$s_1$} - \textit{$s_2$}) mod\textit{n}$ = $(\textit{$z_1$} - \textit{$z_2$}) mod\textit{n}$.
+	\item \textit{k}  = $(\textit{$z_1$} - \textit{$z_2$}) (\textit{$s_1$} - \textit{$s_2$})^{-1}$ mod\textit{n}.
 \end{enumerate}
 
 Ahora despejamos \textit{$d_S$} de la definición de \textit{s} y obtenemos que:
@@ -405,35 +408,26 @@ Ahora despejamos \textit{$d_S$} de la definición de \textit{s} y obtenemos que:
 \begin{align}
 \begin{split}
 \textit{s} &= \textit{$k^{-1}$}(\textit{z} + \textit{r$d_S$}) mod \textit{n}\\
-\textit{$d_S$} &= \textit{$r^{-1}$}(\textit{sk} - \textit{z}) mod \textit{n}\\
+\textit{$d_S$} &= \textit{$r^{-1}$}(\textit{sk} - \textit{z}) mod \textit{n}.\\
 \end{split}
 \end{align}
 
 Así hemos conseguido la clave privada con los valores que conocemos.
 
-\subsection{Comparación con RSA}
+\subsection{Curvas famosas}
 
-La principal diferencia entre la criptografía de la curva elíptica y la de RSA, es la cantidad de almacenamiento que se necesita para guardar una clave al mismo nivel de seguridad. Por ejemplo, si para guardar una clave de RSA se necesitan 1024 bits, para almacenar la de ECC se requiere de 160, las diferencias son aún mayores cuando aumenta el nivel de seguridad, para RSA son necesarios 15360 bits mientras que para ECC son 521 bits.
+\section{Comparación con RSA}
+\label{sec:RSA}
+La principal diferencia entre la criptografía de la curva elíptica y la de RSA es el problema en el que basan su seguridad. La curva elíptica lo hace en el problema del logaritmo discreto, mientras que RSA lo hace en el problema de factorización. Otra diferencia fundamental es la cantidad de almacenamiento que se necesita para guardar una clave al mismo nivel de seguridad. Por ejemplo, si para guardar una clave de RSA se necesitan 1024 bits, para almacenar la de ECC se requiere de 160. Las diferencias son aún mayores cuando aumenta el nivel de seguridad, para RSA son necesarios 15360 bits mientras que para ECC tan solo 521 bits.
 
 La relación entre los tamaños no es lineal, es decir, si multiplicamos por \textit{k} el tamaño de RSA, no tenemos \textit{k} veces el tamaño de ECC.
 
-Por otro lado, la generación de la clave y la firma es considerablemente más rápido con ECC que con RSA.
+Por otro lado, la generación de la clave y la firma es considerablemente más rápida con ECC que con RSA.
 
-
-Los algoritmos más rápidos para el computo de logaritmos discreots, además de la curva elíptica, son Pollard's rho y baby-step giant-step. Destaca uno en particula que es el algoritmo ``criba general del cuerpo de números'' el más rápido conocido a día de hoy para la factorización de enteros, que además se puede usar para el logaritmo discreto.
-
+Los algoritmos más rápidos para el cómputo de logaritmos discretos sobre una curva elíptica son Pollard's \textit{rho} y \textit{baby-step giant-step}. Destaca uno en particular que es el algoritmo ``criba general del cuerpo de números'' el más rápido conocido a día de hoy para la factorización de enteros, que además se puede usar para el logaritmo discreto.
 
 \section{Conclusiones}
 
-
-
-
-%Apéndice
-\appendix
-\renewcommand{\thesection}{\Roman{section}}
-\setcounter{section}{0}
-\section{Glosario}
-
-
-
+\newpage
+\printbibliography
 \end{document}
