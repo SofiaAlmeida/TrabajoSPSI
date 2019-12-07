@@ -242,7 +242,7 @@ La imagen \ref{fig:EC_add} muestra la idea geométrica de la operación de suma
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{ec_add}
-	\caption{Suma de la curva elíptica $\mathbb{R}$ [https://sinhvientot.net/elliptic-curve-cryptography/]}
+	\caption{Suma de la curva elíptica $\mathbb{R}$ \cite{ECC_add}}.
 	\label{fig:EC_add}
 \end{figure}
 
@@ -299,7 +299,7 @@ Así, los múltiplos de $ P $ son cerrados bajo la suma. Obtenemos de este modo 
 \[
 \min\{ n \in \mathbb{N}:\text{ } nP = \infty \text{ y } n | N\}.
 \]
-Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegimos el orden del subgrupo que queremos y posteriormente hallamos el generador. Si el orden del subgrupo es un primo $ p $ el proceso a seguir es el siguiente: calculamos el cofactor $ h = N/n $, tomamos un punto aleatorio $ P \in E $ y obtenemos $ hP $. Si es $\infty$, tomamos un nuevo punto y si no, $ P $ es el generador deseado. Los órdenes de los subgrupos se suelen escoger de orden primo ya que Pohlig y Hellman probaron que un criptosistema es seguro si, y solo si, no es factible el cálculo del logaritmo discreto en grupos con orden un primo (REFERENCIAR: https://ee.stanford.edu/~hellman/publications/28.pdf). En la siguiente sección exponemos el problema del logaritmo discreto en el contexto de las curvas elípticas. \\
+Normalmente, el proceso seguido en los algoritmos de criptografía de la curva elíptica es el opuesto, es decir, primero elegimos el orden del subgrupo que queremos y posteriormente hallamos el generador. Si el orden del subgrupo es un primo $ p $ el proceso a seguir es el siguiente: calculamos el cofactor $ h = N/n $, tomamos un punto aleatorio $ P \in E $ y obtenemos $ hP $. Si es $\infty$, tomamos un nuevo punto y si no, $ P $ es el generador deseado. Los órdenes de los subgrupos se suelen escoger de orden primo ya que Pohlig y Hellman probaron que un criptosistema es seguro si, y solo si, no es factible el cálculo del logaritmo discreto en grupos con orden un primo \cite{pohlig1978improved}. En la siguiente sección exponemos el problema del logaritmo discreto en el contexto de las curvas elípticas. \\
 %----
 \section{El problema del logaritmo discreto}
 \label{sec:log}
@@ -474,19 +474,15 @@ que nos aporta un grupo de orden
 n =2^{256}-0\texttt{x}14551231950b75fc4402da1732fc9bebf.
 \]
 
-(REFERENCIA: https://es.bitcoin.it/wiki/Secp256k1)
 \item NIST P-256: es la que trae \textit{OpenSSL} por defecto y he existe una gran cantidad de métodos para optimizar su uso. \\
-(REFERENCIA: https://tools.ietf.org/html/rfc7748\#page-4) \\
-REFERENCIA: https://es.wikipedia.org/wiki/Curve25519
+
 \item Curve25519: es una de las curvas más rápidas que existen actualmente y su implementación de referencia es de dominio público. Viene dada por
 \[
 y^2 = x^3 + 48662x^2 + x
 \]
 definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos el punto base tal que $ x ⁼ 9 $. Esto nos aporta un subgrupo de orden $ 2{^252 }+ 0\texttt{x}14def9dea2f79cd65812631a5cf5d3ed $. \\
-(REFERENCIA: https://es.wikipedia.org/wiki/Curve25519) \\
-REFERENCIA: https://tools.ietf.org/html/rfc7748\#page-4
+
 \item  Curve448: ofrece potencialmente 224 bits de seguridad y aporta un gran rendimiento. Su implementación base está disponible bajo una licencia del MIT. \\
-(REFERENCIA: https://es.wikipedia.org/wiki/Curva448)
 \end{enumerate}
 \section{Comparación con RSA}
 \label{sec:RSA}
