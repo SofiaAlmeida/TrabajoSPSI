@@ -321,7 +321,7 @@ Ahora que Alice y Bob tienen su clave compartida pueden intercambiar mensajes me
 
 ECDSA es un algoritmo de firma digital, \textit{Elliptic Curve Digital Signature Algorithm}, es una variante del algoritmo DSA (\textit{Digital Signature Algortihm}) aplicado a curvas elípticas. Trabaja con el \textit{hash} del mensaje en lugar de con el propio mensaje. La elección de la función \textit{hash} es importante, de esto dependerá la seguridad del sistema criptográfico. El \textit{hash} del mensaje tendrá una longitud de \textit{n} bits\footnote{Si la longitud fuera mayor que $n$, lo truncamos.}, lo denotamos por \textit{z}.
 
-Imaginemos que Alice quiere firmar un mensaje con su llave privada ($d_{A}$), y la otra persona, Bob, quiere validar la firma con la clave pública de Alice ($H_{A}$). Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su clave pública puede verificarlas.
+Imaginemos que Alice quiere firmar un mensaje con su llave privada, $d_{A}$, y la otra persona, Bob, quiere validar la firma con la clave pública de Alice, $H_{A}$. Alice es la única que puede producir las firmas válidas, sin embargo todo el mundo que tenga su clave pública puede verificarlas.
 
 Alice y Bob están usando los mismos parámetros del dominio.
 
@@ -341,27 +341,27 @@ Al final obtendremos la firma que será la pareja (\textit{r}, \textit{s}).
 
 
 \subsubsection*{Verificación de la firma}
-Ahora entra en juego Bob que quiere validar la firma, $(r,s)$, a partir del mensaje recibido con valor \textit{hash} \textit{z} y de la clave pública de Alice \textit{$H_A$}.
+Ahora entra en juego Bob que quiere validar la firma, $(r,s)$, a partir del mensaje recibido con valor \textit{hash} \textit{z} y de la clave pública de Alice, $H_A$.
 
 \begin{enumerate}
 	\item Calculamos $u_1 \equiv$ \textit{$s^{-1}$ z} mod\textit{n}.
 	\item Calculamos $u_2 \equiv$ \textit{$s^{-1}$ r} mod\textit{n}.
-	\item Calculamos el punto \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}.	
+	\item Calculamos el punto $P = u_1G} + u_2 H_A$.	
 \end{enumerate}
 
-La firma solo es válida si \textit{r} = \textit{$x_P$} mod\textit{n}
+La firma solo es válida si \textit{r} = \textit{$x_P$} \mod\textit{n}
 
 
 \subsubsection*{Exactitud del algoritmo}
-Veamos que esta definición de \textit{P} del punto 3 coincide con la definición original de \textit{P} = \textit{kG}.
+Veamos que esta definición de \textit{P} del punto 3 coincide con la definición original de $P = kG $.
 
-Partimos de \textit{P} = \textit{$u_1$G} + \textit{$u_2$$H_A$}, sustituimos el valor de la clave pública \textit{$H_A$} = \textit{$d_A$G}
+Partimos de \textit{P} = $u_1 G + u_2 H_A$, sustituimos el valor de la clave pública $H_A = d_A G$
 
 
 \begin{align}
 \begin{split}
-\textit{P} &= \textit{$u_1$G} + \textit{$u_2$$H_A$}\\ &= \textit{$u_1$G} + \textit{$u_2$$d_A$G}\\
-&= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}.\\
+\textit{P} &= $u_1 G + u_2 H_A$\\ &= $u_1 G + u_2 d_A G$\\
+&= $ (u_1 + u_2 d_A) G$.\\
 \end{split}
 \end{align}
 
@@ -369,46 +369,46 @@ Sustituimos los valores de $u_1$ y $u_2$ que hemos declarado en la verificación
 
 \begin{align}
 \begin{split}
-P &= (\textit{$u_1$} + \textit{$u_2$$d_A$})\textit{G}\\
-&= (\textit{$s^{-1}$z} + \textit{$s^{-1}$r$d_A$}) \textit{G}\\
-&= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}.\\
+P &= ($u_1 + u_2 d_A) G$\\
+&= ($s^{-1}z + s^{-1} r d_A) G $ \\
+&= $s^{-1}(z + r d_A) G$.\\
 \end{split}
 \end{align}
 
-Como el subgrupo cíclico de orden \textit{n} en el que estamos trabajando está generado por \textit{G} no hace falta poner ``mod \textit{n}'' si multiplicamos por \textit{G}.
+Como el subgrupo cíclico de orden $n$ en el que estamos trabajando está generado por $G$ no hace falta poner ``$\mod n$'' si multiplicamos por $G$.
 
 
-Ahora nos fijamos en la definición de \textit{s} = \textit{$k^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}. Multiplicamos por \textit{k} a ambos lados y dividimos por \textit{s} y obtenemos: \textit{k} = \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) mod \textit{n}.
+Ahora nos fijamos en la definición de $s = k^{-1}(z + r d_A) \mod n$. Multiplicamos por $k$ a ambos lados y dividimos por \textit{s} y obtenemos: $k = s^{-1} (z + r d_A) \mod n$.
 
 \begin{align}
 \begin{split}
-P &= \textit{$s^{-1}$}(\textit{z} + \textit{r$d_A$}) \textit{G}\\
-&= \textit{kG}.
+P &= $s^{-1}(z + r d_A) G$\\
+&= $kG$.
 \end{split}
 \end{align}
 
 
-\subsubsection*{Importancia de \textit{k}}
+\subsubsection*{Importancia de $k$}
 
-Es importante el valor que escojamos de \textit{k} el entero aleatorio utilizado para firmar. Si además siempre firmamos con el mismo valor de \textit{k} y con los mismos valores aleatorios, para los atacantes será más fácil encontrar la clave privada.
+Es importante el valor que escojamos de \textit{k} el entero aleatorio utilizado para firmar. Si además siempre firmamos con el mismo valor de $k$ y con los mismos valores aleatorios, para los atacantes será más fácil encontrar la clave privada.
 
-Para descubrir la clave privada \textit{$d_S$} necesitamos calcular \textit{k} a partir de los valores \textit{hash} \textit{$z_1$} y \textit{$z_2$} y de las correspondientes firmas (\textit{$r_1$}, \textit{$s_1$}) y (\textit{$r_2$}, \textit{$s_2$}).
+Para descubrir la clave privada $d_S$ necesitamos calcular $k$ a partir de los valores \textit{hash} $z_1$ y $z_2$ y de las correspondientes firmas ($r_1$, $s_1$) y ($r_2$, $s_2$).
 
 
 \begin{enumerate}
-	\item $r_1$ es igual a $r_2$, puesto que \textit{r} = \textit{$x_P$} mod \textit{n} y \textit{P} = \textit{kG} es el mismo para las dos firmas.
-	\item Observamos que  $(\textit{$s_1$} - \textit{$s_2$})$ mod\textit{n} = \textit{$k^{-1}$} $(\textit{$z_1$} - \textit{$z_2$})$ mod\textit{n} viene directamente de la definición de \textit{s}.
-	\item \textit{k}$(\textit{$s_1$} - \textit{$s_2$}) mod\textit{n}$ = $(\textit{$z_1$} - \textit{$z_2$}) mod\textit{n}$.
-	\item \textit{k}  = $(\textit{$z_1$} - \textit{$z_2$}) (\textit{$s_1$} - \textit{$s_2$})^{-1}$ mod\textit{n}.
+	\item $r_1$ es igual a $r_2$, puesto que $ r = x_P \mod n$ y $P = kG$ es el mismo para las dos firmas.
+	\item Observamos que  $(s_1 - s_2) \mod n \equiv k^{-1} (z_1 - z_2) \mod n$ viene directamente de la definición de $s$.
+	\item $k(s_1 - s_2) \mod n$ \equiv $(z_1 - z_2) \mod n$.
+	\item $k$  \equiv $(z_1 - z_2) (s_1 -s_2)^{-1} \mod n$.
 \end{enumerate}
 
-Ahora despejamos \textit{$d_S$} de la definición de \textit{s} y obtenemos que:
+Ahora despejamos $d_S$ de la definición de $s$ y obtenemos que:
 
 
 \begin{align}
 \begin{split}
-\textit{s} &= \textit{$k^{-1}$}(\textit{z} + \textit{r$d_S$}) mod \textit{n}\\
-\textit{$d_S$} &= \textit{$r^{-1}$}(\textit{sk} - \textit{z}) mod \textit{n}.\\
+$s &\equiv k^{-1}(z + r d_S) \mod n$\\
+$d_S &\equiv r^{-1}(sk - z) \mod n$.\\
 \end{split}
 \end{align}
 
