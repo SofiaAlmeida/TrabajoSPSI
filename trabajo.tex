@@ -98,12 +98,12 @@
 
 % Bibliografía
 
-\usepackage[sorting=none, style=apa, isbn=true]{biblatex}
-\DefineBibliographyStrings{spanish}{
-urlseen = {Último acceso},
-retrieved = {Último acceso},
-}
-\addbibresource{bibliografia.bib}
+%\usepackage[sorting=none, style=apa, isbn=true]{biblatex}
+%\DefineBibliographyStrings{spanish}{
+%urlseen = {Último acceso},
+%retrieved = {Último acceso},
+%}
+%\addbibresource{bibliografia.bib}
 
 %Apéndices
 \usepackage[toc,title,page]{appendix}
@@ -485,7 +485,7 @@ n =2^{256}-0\texttt{x}14551231950b75fc4402da1732fc9bebf.
 \[
 y^2 = x^3 + 48662x^2 + x
 \]
-definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos el punto base tal que $ x ⁼ 9 $. Esto nos aporta un subgrupo de orden $ 2{^252 }+ 0\texttt{x}14def9dea2f79cd65812631a5cf5d3ed $ (\cite{curve25519}). \\
+definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos el punto base tal que $ x = 9 $. Esto nos aporta un subgrupo de orden $ 2^{252 }+ 0\texttt{x}14def9dea2f79cd65812631a5cf5d3ed $ (\cite{curve25519}). \\
 
 \item  Curve448: ofrece potencialmente 224 bits de seguridad y aporta un gran rendimiento (\cite{curve448}). Su implementación base está disponible bajo una licencia del MIT. \\
 \end{enumerate}
@@ -501,7 +501,7 @@ Por otro lado, la generación de la clave y la firma es considerablemente más r
 Los algoritmos más rápidos para el cómputo de logaritmos discretos sobre una curva elíptica son Pollard's \textit{rho} y \textit{baby-step giant-step}. Destaca uno en particular que es el algoritmo ``criba general del cuerpo de números'' el más rápido conocido a día de hoy para la factorización de enteros, que además se puede usar para el logaritmo discreto.
 
 \section{Demostración práctica}
-\label{sec:semo}
+\label{sec:demo}
 \subsection{SageMath}
 Se ha utilizado SageMath para representar curvas elípticas y para realizar una implementación propia del algoritmo ECDSA, puesto que esta herramienta software contiene funciones específicas para el tratamiento de curvas elípticas.\\
 El código se encuentra en la carpeta \texttt{src}. En el archivo \texttt{elliptic\_curves.ipynb} se recoge la implementación de los ejemplos mostrados en este archivo. En el archivo \texttt{Curvas elípticas.ipynb} está la implementación del algoritmo ECDSA y una situación hipotética de uso en la que Alice y Bob utilizan la firma de mensajes.
@@ -588,5 +588,5 @@ Una vez tenemos la clave privada para a partir de ella generar la clave pública
 
 \newpage
 \nocite{*}
-\printbibliography
+%\printbibliography
 \end{document}
