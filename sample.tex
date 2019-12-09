@@ -2,12 +2,13 @@
 %\usepackage{fontspec}
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{authblk}
+%\usepackage{authblk}
 %Código
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{caption}
 \captionsetup[lstlisting]{labelformat=empty}% redefines the caption setup of the figures environment in the beamer class.
+\captionsetup[figure]{labelformat=empty}
 \usepackage{spverbatim}
 \usepackage{fancyvrb}
 \usepackage{fvextra}
@@ -25,6 +26,11 @@
 \usepackage[none]{hyphenat}
 \usepackage{longtable}
 \usepackage{booktabs}
+
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 % macro
 \def\BeginColumn#1{\begin{columns}\column{#1\textwidth}}
@@ -80,7 +86,7 @@
 
 % disable "Figure:" in the captions
 \setbeamertemplate{caption}{\tiny\insertcaption}
-\setbeamertemplate{caption label separator}{}
+%\setbeamertemplate{caption label separator}{ }
 
 % since I don't know a better way to do this, these are all switches
 % doing `\setcounter{showProgressBar}{0}` will turn the progress bar off (I turn it off for Appendix slides)
@@ -142,7 +148,7 @@
       \node[anchor=south,text width=\slidewidth-1cm,inner xsep=0.5cm] at (0.5\slidewidth,4cm) {\color{ExecusharesWhite}\Huge\textbf{\inserttitle}};
       \node[anchor=north east,text width=\slidewidth-1cm,align=right] at (\slidewidth-0.4cm,4cm) {\color{ExecusharesBlack}\tiny\insertsubtitle};
       \node[above] at(0.5\slidewidth,2.3cm) {\color{ExecusharesBlack}\tiny };
-      \node at (0.5\slidewidth,2cm) {\color{ExecusharesBlack}\large\insertauthor};
+      \node at (0.5\slidewidth,2cm) {\color{ExecusharesBlack}\Large\insertauthor};
 
       % add the date in the corner
       \node[anchor=south east] at(\slidewidth,0cm) {\color{ExecusharesGrey}\tiny\insertdate};
@@ -251,11 +257,11 @@
 \newcommand{\NormalTok}[1]{{#1}}
 
 \title{Criptografía de la curva elíptica}
-%\author[1]{Sofía Almeida Bruno}
-%\author[2]{Pedro Flores Crespo}
-%\author[3]{Mª Victoria Granados Pozo}
-\author{Sofía \and Pedro}
-\date{\today}
+\author[Author One at al.]{\makebox[0pt]{Sofía Almeida \and Pedro Flores \and Victoria Granados}} 
+%\date{\today}
+
+
+\setbeamertemplate{frametitle continuation}{\gdef\beamer@frametitle{}}
 
 \begin{document}
 \frame{\titlepage}
@@ -263,11 +269,13 @@
 \frame{\tableofcontents}
 
 \section{Curva elíptica}\label{curva}
+\large
 \begin{frame}[fragile]{Curva elíptica}
-Consideramos un cuerpo $K$ y definimos la curva elíptica $E$ sobre él de la siguiente forma:
+  Consideramos un cuerpo $K$ y definimos la curva elíptica $E$ sobre él de la siguiente forma:
+\normalsize
 \[E = \{(x,y) \in K\times K : y^2 = x^3 + ax +b,\ 4a^3+27b \neq 0\} \cup \{\infty\}.
 \]
-
+\large
 El punto $\infty$ se añade por definición.
 \end{frame}
 
@@ -353,7 +361,8 @@ nP =
 
 \begin{frame}[fragile]{Subgrupos}
   \begin{itemize}
-  \item Los múltiplos de $P$ generan un subgrupo cíclico de orden $\min\{ n \in \mathbb{N}:\text{ } nP = \infty \text{ y } n | N\}$.
+  \item Los múltiplos de $P$ generan un subgrupo cíclico de orden $\min\{ n \in \mathbb{N}:\text{ } nP = \infty \text{ y } n | N\}$.\\
+    
   \item Primero elegimos el orden del subgrupo, $n$, y posteriormente hallamos el generador $P$.
   \end{itemize}
   
@@ -364,11 +373,13 @@ nP =
 Si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ¿podemos encontrar un $ k $ tal que $ Q = kP $?  
 \end{frame}
 \begin{frame}[fragile]{Problema del logaritmo discreto}
-  Si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ¿podemos encontrar un $ k $ tal que $ Q = kP $?\\
+Si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ¿podemos encontrar un $ k $ tal que $ Q = kP $?\\
 \vspace{3mm}
-  No existe demostración que pruebe su dificultad.\\
+  
+No existe demostración que pruebe su dificultad.\\
 \vspace{3mm}
-  Algoritmo \textit{Baby-step, giant-step}, complejidad $O(\sqrt{n})$.\\
+
+Algoritmo \textit{Baby-step, giant-step}, complejidad $O(\sqrt{n})$.\\
 \end{frame}
 
 \section*{Algoritmos}
@@ -455,14 +466,14 @@ y^2 = x^3 + 7.
 \]
 Se suele utilizar como punto base
 \begin{align*}
-G = (0\texttt{x}&79be667ef9dcbbac55a06295ce870b07 \\
-				&029bfcdb2dce28d959f2815b16f81798, \\
-	 0\texttt{x}&483ada7726a3c4655da4fbfc0e1108a8 \\
-	 			&fd17b448a68554199c47d08ffb10d4b8),
+G = (0\texttt{x}&\text{79be667ef9dcbbac55a06295ce870b07} \\
+				&\text{029bfcdb2dce28d959f2815b16f81798}, \\
+	 0\texttt{x}&\text{483ada7726a3c4655da4fbfc0e1108a8} \\
+	 			&\text{fd17b448a68554199c47d08ffb10d4b8}),
 \end{align*}
 que nos aporta un grupo de orden
 \[
-2^{256}-0\texttt{x}14551231950b75fc4402da1732fc9bebf.
+2^{256}-0\texttt{x}\text{14551231950b75fc4402da1732fc9bebf}.
 \]
 
 \item NIST P-256: es la que trae \textit{OpenSSL} por defecto y existen una gran cantidad de métodos para optimizar su uso. \\
@@ -472,7 +483,7 @@ que nos aporta un grupo de orden
 y^2 = x^3 + 48662x^2 + x
 \]
 definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos y el punto base tal que $ x = 9 $. Esto nos aporta un subgrupo de orden 
-\[  2^{252 }+ 0\texttt{x}14def9dea2f79cd65812631a5cf5d3ed. \]
+\[  2^{252 }+ 0\texttt{x}\text{14def9dea2f79cd65812631a5cf5d3ed}. \]
 
 \item  Curve448: ofrece potencialmente 224 bits de seguridad y aporta un gran rendimiento. Su implementación base está disponible bajo una licencia MIT. \\
 \end{itemize}
@@ -480,11 +491,12 @@ definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos y el punto base t
 \end{frame}
 
 \section{Comparación con RSA}\label{rsa}
+\normalsize
 \begin{frame}[fragile]{Comparación con RSA}
   \begin{table}[H]
 	  \centering
 	  \begin{adjustbox}{width=\textwidth}
-	\begin{tabular}{lrr}
+	    \begin{tabular}{L{3cm}rR{3cm}}
 	  \toprule
 	   & \textbf{RSA} & \textbf{EC} \\
 	  \midrule
@@ -498,6 +510,7 @@ definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos y el punto base t
 \end{frame}
 
 \section{Demostración práctica}\label{demo}
+\normalsize
 \begin{frame}[fragile]{OpenSSL}
 \begin{Verbatim}[breaklines=true]
   $ openssl ecparam -list_curves
