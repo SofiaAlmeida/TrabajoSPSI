@@ -5,11 +5,19 @@
 \usepackage{authblk}
 %Código
 \usepackage{listings}
+\usepackage{xcolor}
+\usepackage{caption}
+\captionsetup[lstlisting]{labelformat=empty}% redefines the caption setup of the figures environment in the beamer class.
+\usepackage{spverbatim}
+\usepackage{fancyvrb}
+\usepackage{fvextra}
 %Imágenes
 \usepackage{graphicx}
 \graphicspath{{img/}}
 \usepackage{float}
 \usepackage{adjustbox}
+
+
 
 % the various libraries we will be using
 \usepackage{tikz}
@@ -264,7 +272,7 @@ El punto $\infty$ se añade por definición.
 \end{frame}
 
 \begin{frame}[fragile]{Curva elíptica}
-\begin{lstlisting}[label={cod:ej1}, caption={Curva elíptica $y^2=x^3-x$}, morekeywords={sage}]
+\begin{lstlisting}[ label={cod:ej1}, caption={Curva elíptica $y^2=x^3-x$},language=Python, morekeywords={sage}]
 sage: E =  EllipticCurve(RR, [-1, 0]);
       plot(E, (-4, 3), color=hue(0.6))
 \end{lstlisting}
@@ -446,14 +454,15 @@ Si conocemos $ P $ y $ Q $ dos puntos de la curva elíptica, ¿podemos encontrar
 y^2 = x^3 + 7.
 \]
 Se suele utilizar como punto base
-
 \begin{align*}
-G = (&0\texttt{x}79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798, \\
-		&0\texttt{x}483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8),
+G = (0\texttt{x}&79be667ef9dcbbac55a06295ce870b07 \\
+				&029bfcdb2dce28d959f2815b16f81798, \\
+	 0\texttt{x}&483ada7726a3c4655da4fbfc0e1108a8 \\
+	 			&fd17b448a68554199c47d08ffb10d4b8),
 \end{align*}
 que nos aporta un grupo de orden
 \[
-n =2^{256}-0\texttt{x}14551231950b75fc4402da1732fc9bebf.
+2^{256}-0\texttt{x}14551231950b75fc4402da1732fc9bebf.
 \]
 
 \item NIST P-256: es la que trae \textit{OpenSSL} por defecto y existen una gran cantidad de métodos para optimizar su uso. \\
@@ -462,7 +471,8 @@ n =2^{256}-0\texttt{x}14551231950b75fc4402da1732fc9bebf.
 \[
 y^2 = x^3 + 48662x^2 + x
 \]
-definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos el punto base tal que $ x = 9 $. Esto nos aporta un subgrupo de orden $ 2^{252 }+ 0\texttt{x}14def9dea2f79cd65812631a5cf5d3ed$. \\
+definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos y el punto base tal que $ x = 9 $. Esto nos aporta un subgrupo de orden 
+\[  2^{252 }+ 0\texttt{x}14def9dea2f79cd65812631a5cf5d3ed. \]
 
 \item  Curve448: ofrece potencialmente 224 bits de seguridad y aporta un gran rendimiento. Su implementación base está disponible bajo una licencia MIT. \\
 \end{itemize}
@@ -489,7 +499,7 @@ definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos el punto base tal
 
 \section{Demostración práctica}\label{demo}
 \begin{frame}[fragile]{OpenSSL}
-\begin{verbatim}
+\begin{Verbatim}[breaklines=true]
   $ openssl ecparam -list_curves
   $ openssl ecparam -name secp256k1 -out secp256k1.pem
   $ cat secp2561.pem
@@ -498,6 +508,7 @@ definida sobre el cuerpo finito con $ 2^{255} - 19 $ elementos el punto base tal
   $ openssl ecparam -name secp256k1 -genkey -noout -out secp256k1-key.pem
   $ cat secp256k1-key.pem
   $ openssl ec -in secp256k1-key.pem -pubout -out ecpubkey.pem
-\end{verbatim}
+\end{Verbatim}
+
 \end{frame}
 \end{document}
