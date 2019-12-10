@@ -450,7 +450,6 @@ Algoritmo \textit{Baby-step, giant-step}, complejidad $O(\sqrt{n})$.\\
   \begin{enumerate}
 	\item $r_1$ es igual a $r_2$, puesto que $ r \equiv x_P \mod n$ y $P = kG$ es el mismo para las dos firmas.
 	\item  $(s_1 - s_2) \mod n \equiv k^{-1} (z_1 - z_2) \mod n$.
-	\item $k(s_1 - s_2) \mod n \equiv (z_1 - z_2) \mod n$.
 	\item $k  \equiv (z_1 - z_2) (s_1 -s_2)^{-1} \mod n$.
         \item Despejamos $d_S$ de $s \equiv k^{-1}(z + r d_S) \mod n$ y obtenemos $d_S \equiv r^{-1}(sk - z) \mod n$, todos valores conocidos. 
 \end{enumerate}
